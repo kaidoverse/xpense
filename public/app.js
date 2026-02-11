@@ -25,6 +25,7 @@ const summaryIn = document.querySelector(".summary__value--in");
 const summaryOut = document.querySelector(".summary__value--out");
 const summaryNet = document.querySelector(".summary__value--net");
 const movementsList = document.querySelector(".movements");
+const statusEl = document.querySelector(".status");
 let currentUser = null;
 
 const setTheme = theme => {
@@ -70,29 +71,61 @@ const renderMovements = movements => {
   });
 };
 
+const setStatus = (message, tone = "info") => {
+  statusEl.textContent = message || "";
+  statusEl.classList.remove("is-error", "is-success");
+  if (tone === "error") statusEl.classList.add("is-error");
+  if (tone === "success") statusEl.classList.add("is-success");
+};
+
+const setLoading = isLoading => {
+  document.body.classList.toggle("is-loading", isLoading);
+};
+
 loginForm.addEventListener("submit", async event => {
   event.preventDefault();
-  currentUser = await login(loginEmailInput.value, loginPasswordInput.value);
-  const movements = await listTransactions(currentUser.uid);
-  const summary = await getSummary(currentUser.uid);
-  renderMovements(movements);
-  updateSummary(summary);
+  try {
+    setLoading(true);
+    setStatus("Signing in...");
+    currentUser = await login(loginEmailInput.value, loginPasswordInput.value);
+    const movements = await listTransactions(currentUser.uid);
+    const summary = await getSummary(currentUser.uid);
+    renderMovements(movements);
+    updateSummary(summary);
+    setStatus("Signed in", "success");
+  } catch (error) {
+    console.error(error);
+    setStatus("Sign in failed", "error");
+  } finally {
+    setLoading(false);
+  }
 });
 
 addForm.addEventListener("submit", async event => {
   event.preventDefault();
   const amount = Number(addAmountInput.value);
   if (!amount || !currentUser) return;
-  await addTransaction(currentUser.uid, {
-    type: addTypeInput.value,
-    amount,
-    date: "Today",
-    category: categorySelect.value,
-  });
-  const movements = await listTransactions(currentUser.uid);
-  const summary = await getSummary(currentUser.uid);
-  renderMovements(movements);
-  updateSummary(summary);
+  try {
+    setLoading(true);
+    setStatus("Adding transaction...");
+    await addTransaction(currentUser.uid, {
+      type: addTypeInput.value,
+      amount,
+      date: "Today",
+      category: categorySelect.value,
+    });
+    const movements = await listTransactions(currentUser.uid);
+    const summary = await getSummary(currentUser.uid);
+    renderMovements(movements);
+    updateSummary(summary);
+    setStatus("Transaction added", "success");
+    addAmountInput.value = "";
+  } catch (error) {
+    console.error(error);
+    setStatus("Failed to add transaction", "error");
+  } finally {
+    setLoading(false);
+  }
 });
 
 categoryForm.addEventListener("submit", event => {
@@ -102,14 +135,28 @@ categoryForm.addEventListener("submit", event => {
 
 signOutForm.addEventListener("submit", async event => {
   event.preventDefault();
-  await logout();
-  currentUser = null;
-  renderMovements([]);
-  updateSummary({ income: 0, expense: 0, net: 0 });
+  try {
+    setLoading(true);
+    setStatus("Signing out...");
+    await logout();
+    currentUser = null;
+    renderMovements([]);
+    updateSummary({ income: 0, expense: 0, net: 0 });
+    setStatus("Signed out");
+  } catch (error) {
+    console.error(error);
+    setStatus("Sign out failed", "error");
+  } finally {
+    setLoading(false);
+  }
 });
 
 updateSummary({ income: 0, expense: 0, net: 0 });
 
 onAuthChange(user => {
   currentUser = user;
+  if (!user) {
+    renderMovements([]);
+    updateSummary({ income: 0, expense: 0, net: 0 });
+  }
 });

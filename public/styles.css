@@ -182,6 +182,24 @@ body[data-theme="light"] .login__input {
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
+.status {
+  grid-column: 1 / span 2;
+  margin: 0;
+  font-size: 0.85rem;
+  letter-spacing: 0.08rem;
+  text-transform: uppercase;
+  color: var(--muted);
+  min-height: 1.2rem;
+}
+
+.status.is-error {
+  color: var(--expense);
+}
+
+.status.is-success {
+  color: var(--income);
+}
+
 .balance__label {
   font-size: 0.95rem;
   text-transform: uppercase;
@@ -377,6 +395,12 @@ body[data-theme="light"] .form__input {
   letter-spacing: 0.12rem;
   cursor: pointer;
   transition: background 0.2s ease, color 0.2s ease;
+}
+
+.is-loading .form__btn,
+.is-loading .login__btn {
+  opacity: 0.6;
+  cursor: wait;
 }
 
 .form__btn:hover,
