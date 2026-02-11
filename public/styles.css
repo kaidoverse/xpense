@@ -429,6 +429,18 @@ body[data-theme="light"] .form__input {
   outline: 2px solid rgba(214, 178, 109, 0.35);
 }
 
+.is-invalid {
+  border-color: var(--expense);
+}
+
+.field-error {
+  font-size: 0.7rem;
+  color: var(--expense);
+  text-transform: uppercase;
+  letter-spacing: 0.12rem;
+  grid-column: 1 / -1;
+}
+
 .form__label {
   font-size: 0.7rem;
   color: var(--muted);
