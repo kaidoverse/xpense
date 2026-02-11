@@ -159,6 +159,28 @@ const requireDate = () => {
   return categoryDate.value;
 };
 
+const getAuthErrorMessage = error => {
+  const code = error?.code || "";
+  if (code === "auth/email-already-in-use") {
+    showFieldError(loginEmailInput, "Email already registered");
+    return "Email already registered. Sign in instead.";
+  }
+  if (code === "auth/invalid-credential" || code === "auth/user-not-found") {
+    showFieldError(loginEmailInput, "Check email");
+    showFieldError(loginPasswordInput, "Check password");
+    return "Invalid credentials. Check email/password.";
+  }
+  if (code === "auth/wrong-password") {
+    showFieldError(loginPasswordInput, "Wrong password");
+    return "Wrong password.";
+  }
+  if (code === "auth/weak-password") {
+    showFieldError(loginPasswordInput, "Weak password");
+    return "Password is too weak.";
+  }
+  return "Authentication failed";
+};
+
 const applyFilter = filter => {
   if (filter === "income" || filter === "expense")
     return cachedMovements.filter(item => item.type === filter);
@@ -181,7 +203,7 @@ loginForm.addEventListener("submit", async event => {
     setStatus("Signed in", "success");
   } catch (error) {
     console.error(error);
-    setStatus("Sign in failed", "error");
+    setStatus(getAuthErrorMessage(error), "error");
   } finally {
     setLoading(false);
   }
@@ -201,7 +223,7 @@ signupButton.addEventListener("click", async () => {
     setStatus("Account created", "success");
   } catch (error) {
     console.error(error);
-    setStatus("Sign up failed", "error");
+    setStatus(getAuthErrorMessage(error), "error");
   } finally {
     setLoading(false);
   }
