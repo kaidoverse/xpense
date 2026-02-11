@@ -16,6 +16,7 @@ const addAmountInput = document.querySelector(".form__input--amount");
 const addTypeInput = document.querySelector(".form__input--type");
 const categoryForm = document.querySelector(".form--category");
 const categorySelect = document.querySelector(".form__input--category");
+const categoryDate = document.querySelector(".form__input--date");
 const categoryNote = document.querySelector(".form__input--note");
 const signOutForm = document.querySelector(".form--close");
 const signOutEmail = document.querySelector(".form__input--email");
@@ -63,11 +64,13 @@ const renderMovements = movements => {
 
     const date = document.createElement("div");
     date.className = "movements__date";
-    date.textContent = movement.date;
+    const categoryLabel = movement.category ? `• ${movement.category}` : "";
+    date.textContent = `${movement.date || "Today"} ${categoryLabel}`.trim();
 
     const value = document.createElement("div");
     value.className = "movements__value";
     value.textContent = `${movement.type === "expense" ? "-" : ""}$${movement.amount.toFixed(2)}`;
+    if (movement.note) value.title = movement.note;
 
     const deleteBtn = document.createElement("button");
     deleteBtn.className = "movements__delete";
@@ -137,8 +140,9 @@ addForm.addEventListener("submit", async event => {
     await addTransaction(currentUser.uid, {
       type: addTypeInput.value,
       amount,
-      date: "Today",
+      date: categoryDate.value || "Today",
       category: categorySelect.value,
+      note: categoryNote.value || "",
     });
     cachedMovements = await listTransactions(currentUser.uid);
     const summary = await getSummary(currentUser.uid);

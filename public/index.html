@@ -88,7 +88,7 @@
       </section>
 
       <section class="operation operation--category">
-        <h2>Category</h2>
+        <h2>Details</h2>
         <form class="form form--category">
           <select class="form__input form__input--category" aria-label="Category">
             <option value="salary">Salary</option>
@@ -98,6 +98,11 @@
             <option value="misc">Misc</option>
           </select>
           <input
+            type="date"
+            class="form__input form__input--date"
+            aria-label="Date"
+          />
+          <input
             type="text"
             class="form__input form__input--note"
             placeholder="Note"
@@ -106,6 +111,7 @@
             Save
           </button>
           <label class="form__label">Category</label>
+          <label class="form__label">Date</label>
           <label class="form__label">Note</label>
         </form>
       </section>

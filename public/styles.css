@@ -375,6 +375,10 @@ body[data-theme="light"] .login__input {
   gap: 0.5rem 1rem;
 }
 
+.form.form--category {
+  grid-template-columns: repeat(4, 1fr);
+}
+
 .form__input {
   width: 100%;
   border: 1px solid rgba(255, 255, 255, 0.08);
