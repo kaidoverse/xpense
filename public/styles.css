@@ -399,6 +399,14 @@ body:not(.is-authenticated) .operation--close {
   display: none;
 }
 
+body:not(.is-authenticated) .balance,
+body:not(.is-authenticated) .movements,
+body:not(.is-authenticated) .summary,
+body:not(.is-authenticated) .operation--add,
+body:not(.is-authenticated) .operation--category {
+  display: none;
+}
+
 .operation h2 {
   margin: 0 0 1rem;
   font-size: 1.4rem;
