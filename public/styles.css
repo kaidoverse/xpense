@@ -395,6 +395,10 @@ body[data-theme="light"] .login__btn--secondary {
     var(--card);
 }
 
+body:not(.is-authenticated) .operation--close {
+  display: none;
+}
+
 .operation h2 {
   margin: 0 0 1rem;
   font-size: 1.4rem;

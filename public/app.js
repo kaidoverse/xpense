@@ -96,6 +96,10 @@ const setLoading = isLoading => {
   document.body.classList.toggle("is-loading", isLoading);
 };
 
+const setAuthState = isAuthenticated => {
+  document.body.classList.toggle("is-authenticated", isAuthenticated);
+};
+
 const clearFieldErrors = form => {
   if (!form) return;
   form.querySelectorAll(".is-invalid").forEach(field => {
@@ -286,9 +290,11 @@ signOutForm.addEventListener("submit", async event => {
 });
 
 updateSummary({ income: 0, expense: 0, net: 0 });
+setAuthState(false);
 
 onAuthChange(user => {
   currentUser = user;
+  setAuthState(Boolean(user));
   if (!user) {
     cachedMovements = [];
     renderMovements([]);
