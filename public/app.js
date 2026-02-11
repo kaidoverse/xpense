@@ -1,6 +1,6 @@
 "use strict";
 
-import { login, logout } from "./api/auth.js";
+import { login, logout, onAuthChange } from "./api/auth.js";
 import {
   addTransaction,
   getSummary,
@@ -25,6 +25,7 @@ const summaryIn = document.querySelector(".summary__value--in");
 const summaryOut = document.querySelector(".summary__value--out");
 const summaryNet = document.querySelector(".summary__value--net");
 const movementsList = document.querySelector(".movements");
+let currentUser = null;
 
 const setTheme = theme => {
   document.body.setAttribute("data-theme", theme);
@@ -71,9 +72,9 @@ const renderMovements = movements => {
 
 loginForm.addEventListener("submit", async event => {
   event.preventDefault();
-  await login(loginEmailInput.value, loginPasswordInput.value);
-  const movements = await listTransactions();
-  const summary = await getSummary();
+  currentUser = await login(loginEmailInput.value, loginPasswordInput.value);
+  const movements = await listTransactions(currentUser.uid);
+  const summary = await getSummary(currentUser.uid);
   renderMovements(movements);
   updateSummary(summary);
 });
@@ -81,15 +82,15 @@ loginForm.addEventListener("submit", async event => {
 addForm.addEventListener("submit", async event => {
   event.preventDefault();
   const amount = Number(addAmountInput.value);
-  if (!amount) return;
-  await addTransaction(null, {
+  if (!amount || !currentUser) return;
+  await addTransaction(currentUser.uid, {
     type: addTypeInput.value,
     amount,
     date: "Today",
     category: categorySelect.value,
   });
-  const movements = await listTransactions();
-  const summary = await getSummary();
+  const movements = await listTransactions(currentUser.uid);
+  const summary = await getSummary(currentUser.uid);
   renderMovements(movements);
   updateSummary(summary);
 });
@@ -102,8 +103,13 @@ categoryForm.addEventListener("submit", event => {
 signOutForm.addEventListener("submit", async event => {
   event.preventDefault();
   await logout();
+  currentUser = null;
   renderMovements([]);
   updateSummary({ income: 0, expense: 0, net: 0 });
 });
 
 updateSummary({ income: 0, expense: 0, net: 0 });
+
+onAuthChange(user => {
+  currentUser = user;
+});

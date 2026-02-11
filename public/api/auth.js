@@ -1,20 +1,31 @@
 "use strict";
 
-// Auth stub API. Replace internals with Firebase calls later.
+import {
+  createUserWithEmailAndPassword,
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  signOut,
+} from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
+import { auth } from "../firebase.js";
+
 export async function register(email, password) {
-  console.log("Register", email, password);
-  return { uid: "stub-user" };
+  const credential = await createUserWithEmailAndPassword(
+    auth,
+    email,
+    password
+  );
+  return credential.user;
 }
 
 export async function login(email, password) {
-  console.log("Login", email, password);
-  return { uid: "stub-user" };
+  const credential = await signInWithEmailAndPassword(auth, email, password);
+  return credential.user;
 }
 
 export async function logout() {
-  console.log("Logout");
+  await signOut(auth);
 }
 
 export function onAuthChange(callback) {
-  callback(null);
+  return onAuthStateChanged(auth, callback);
 }
