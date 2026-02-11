@@ -156,6 +156,7 @@ body[data-theme="light"] .login__input {
   letter-spacing: 0.08rem;
   cursor: pointer;
   transition: background 0.2s ease, color 0.2s ease;
+  text-decoration: none;
 }
 
 .login__btn:hover,
@@ -344,6 +345,7 @@ body[data-theme="light"] .login__btn--secondary {
   text-transform: uppercase;
   letter-spacing: 0.12rem;
   font-size: 0.7rem;
+  max-width: 100%;
 }
 
 .filter__select:focus {
@@ -360,6 +362,7 @@ body[data-theme="light"] .login__btn--secondary {
   letter-spacing: 0.12rem;
   font-size: 0.7rem;
   cursor: pointer;
+  max-width: 100%;
 }
 
 .filter__clear:hover,
@@ -436,13 +439,6 @@ body:not(.is-authenticated) .operation--category {
   border-radius: 0.3rem;
 }
 
-.filter__select,
-.filter__clear,
-.login__btn,
-.login__input {
-  max-width: 100%;
-}
-
 body[data-theme="light"] .form__input {
   border: 1px solid rgba(0, 0, 0, 0.08);
   background: rgba(255, 255, 255, 0.9);
@@ -508,6 +504,80 @@ body[data-theme="light"] .form__input {
   font-weight: 600;
 }
 
+.filter__select,
+.filter__clear,
+.login__btn,
+.login__input {
+  max-width: 100%;
+}
+
+.landing .topbar {
+  border-bottom: none;
+  margin-bottom: 3rem;
+}
+
+.landing__hero {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 3rem;
+  align-items: center;
+}
+
+.landing__copy h1 {
+  font-size: clamp(2.5rem, 4vw, 4rem);
+  margin-bottom: 1rem;
+}
+
+.landing__eyebrow {
+  letter-spacing: 0.2rem;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.landing__lead {
+  color: var(--muted);
+  font-size: 1.05rem;
+  line-height: 1.6;
+  max-width: 30rem;
+}
+
+.landing__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.landing__card {
+  background: var(--card-strong);
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: var(--shadow);
+  display: grid;
+  gap: 1.5rem;
+}
+
+.landing__stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.landing__stat-label {
+  text-transform: uppercase;
+  letter-spacing: 0.15rem;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.landing__stat-value {
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
 @media (max-width: 900px) {
   .topbar {
     flex-direction: column;
@@ -560,9 +630,5 @@ body[data-theme="light"] .form__input {
 
   .summary {
     gap: 0.75rem;
-  }
-
-  .btn--filter {
-    width: 100%;
   }
 }

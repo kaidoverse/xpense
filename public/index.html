@@ -6,153 +6,44 @@
     <title>Xpense</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
-  <body>
+  <body class="landing">
     <nav class="topbar">
       <div class="brand">
         <span class="brand__dot"></span>
         <span class="brand__text">Xpense</span>
       </div>
-      <button class="theme-toggle" type="button" aria-label="Toggle theme">
-        Light mode
-      </button>
-      <form class="login" aria-label="Login">
-        <input
-          type="email"
-          placeholder="email"
-          class="login__input login__input--email"
-        />
-        <input
-          type="password"
-          placeholder="password"
-          class="login__input login__input--password"
-        />
-        <button class="login__btn" type="submit">Sign in</button>
-        <button class="login__btn login__btn--secondary" type="button">
-          Create account
-        </button>
-      </form>
+      <a class="login__btn" href="app.html">Open App</a>
     </nav>
 
-    <main class="app">
-      <header class="balance">
-        <div>
-          <p class="balance__label">Current balance</p>
-          <p class="balance__date">
-            As of <span class="date">Today</span>
-          </p>
+    <main class="landing__hero">
+      <div class="landing__copy">
+        <p class="landing__eyebrow">Personal finance, simplified</p>
+        <h1>Track every expense. Own your money.</h1>
+        <p class="landing__lead">
+          Xpense helps you log income, control spending, and see a clear
+          summary of where your money goes.
+        </p>
+        <div class="landing__actions">
+          <a class="login__btn" href="app.html">Get started</a>
+          <a class="login__btn login__btn--secondary" href="app.html">
+            I already have an account
+          </a>
         </div>
-        <p class="balance__value">$0.00</p>
-      </header>
-
-      <p class="status" role="status" aria-live="polite"></p>
-
-      <section class="movements" aria-label="Transactions">
-        <div class="movements__row">
-          <div class="movements__type movements__type--income">Income</div>
-          <div class="movements__date">Today</div>
-          <div class="movements__value">$0.00</div>
+      </div>
+      <div class="landing__card">
+        <div class="landing__stat">
+          <span class="landing__stat-label">Monthly net</span>
+          <span class="landing__stat-value">$2,420</span>
         </div>
-        <div class="movements__row">
-          <div class="movements__type movements__type--expense">Expense</div>
-          <div class="movements__date">Yesterday</div>
-          <div class="movements__value">-$0.00</div>
+        <div class="landing__stat">
+          <span class="landing__stat-label">Top category</span>
+          <span class="landing__stat-value">Food & dining</span>
         </div>
-      </section>
-
-      <section class="summary" aria-label="Summary">
-        <p class="summary__label">In</p>
-        <p class="summary__value summary__value--in">$0.00</p>
-        <p class="summary__label">Out</p>
-        <p class="summary__value summary__value--out">$0.00</p>
-        <p class="summary__label">Net</p>
-        <p class="summary__value summary__value--net">$0.00</p>
-        <select class="filter__select" aria-label="Filter">
-          <option value="all">All</option>
-          <option value="income">Income</option>
-          <option value="expense">Expense</option>
-          <option value="salary">Salary</option>
-          <option value="rent">Rent</option>
-          <option value="food">Food</option>
-          <option value="transport">Transport</option>
-          <option value="misc">Misc</option>
-        </select>
-        <button class="filter__clear" type="button">Clear</button>
-      </section>
-
-      <section class="operation operation--add">
-        <h2>Add transaction</h2>
-        <form class="form form--add">
-          <input
-            type="number"
-            inputmode="decimal"
-            class="form__input form__input--amount"
-            placeholder="Amount"
-          />
-          <select class="form__input form__input--type" aria-label="Type">
-            <option value="income">Income</option>
-            <option value="expense">Expense</option>
-          </select>
-          <button class="form__btn form__btn--add" type="submit">Add</button>
-          <label class="form__label">Amount</label>
-          <label class="form__label">Type</label>
-        </form>
-      </section>
-
-      <section class="operation operation--category">
-        <h2>Details</h2>
-        <form class="form form--category">
-          <select class="form__input form__input--category" aria-label="Category">
-            <option value="salary">Salary</option>
-            <option value="rent">Rent</option>
-            <option value="food">Food</option>
-            <option value="transport">Transport</option>
-            <option value="misc">Misc</option>
-          </select>
-          <input
-            type="date"
-            class="form__input form__input--date"
-            aria-label="Date"
-          />
-          <input
-            type="text"
-            class="form__input form__input--note"
-            placeholder="Note"
-          />
-          <button class="form__btn form__btn--category" type="submit">
-            Save
-          </button>
-          <label class="form__label">Category</label>
-          <label class="form__label">Date</label>
-          <label class="form__label">Note</label>
-        </form>
-      </section>
-
-      <section class="operation operation--close">
-        <h2>Sign out</h2>
-        <form class="form form--close">
-          <input
-            type="email"
-            class="form__input form__input--email"
-            placeholder="Email"
-          />
-          <input
-            type="password"
-            class="form__input form__input--password"
-            placeholder="Password"
-          />
-          <button class="form__btn form__btn--close" type="submit">
-            Sign out
-          </button>
-          <label class="form__label">Confirm email</label>
-          <label class="form__label">Confirm password</label>
-        </form>
-      </section>
-
-      <p class="logout-timer">
-        You will be logged out in <span class="timer">05:00</span>
-      </p>
+        <div class="landing__stat">
+          <span class="landing__stat-label">Upcoming bills</span>
+          <span class="landing__stat-value">3 this week</span>
+        </div>
+      </div>
     </main>
-
-    <script type="module" src="app.js"></script>
   </body>
 </html>
