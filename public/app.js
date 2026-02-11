@@ -28,6 +28,7 @@ const summaryNet = document.querySelector(".summary__value--net");
 const movementsList = document.querySelector(".movements");
 const statusEl = document.querySelector(".status");
 const filterSelect = document.querySelector(".filter__select");
+const filterClear = document.querySelector(".filter__clear");
 let currentUser = null;
 let cachedMovements = [];
 
@@ -184,6 +185,11 @@ onAuthChange(user => {
 
 filterSelect.addEventListener("change", () => {
   renderMovements(applyFilter(filterSelect.value));
+});
+
+filterClear.addEventListener("click", () => {
+  filterSelect.value = "all";
+  renderMovements(cachedMovements);
 });
 
 movementsList.addEventListener("click", async event => {
