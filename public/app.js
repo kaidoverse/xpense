@@ -34,6 +34,12 @@ const filterClear = document.querySelector(".filter__clear");
 let currentUser = null;
 let cachedMovements = [];
 
+const isAppPage = () => window.location.pathname.endsWith("/app.html");
+const isLandingPage = () => !isAppPage();
+const redirectToApp = () => {
+  if (!isAppPage()) window.location.href = "app.html";
+};
+
 const setTheme = theme => {
   document.body.setAttribute("data-theme", theme);
   themeToggle.textContent = theme === "dark" ? "Light mode" : "Dark mode";
@@ -94,10 +100,6 @@ const setStatus = (message, tone = "info") => {
 
 const setLoading = isLoading => {
   document.body.classList.toggle("is-loading", isLoading);
-};
-
-const setAuthState = isAuthenticated => {
-  document.body.classList.toggle("is-authenticated", isAuthenticated);
 };
 
 const clearFieldErrors = form => {
@@ -200,6 +202,7 @@ loginForm.addEventListener("submit", async event => {
     setLoading(true);
     setStatus("Signing in...");
     currentUser = await login(payload.email, payload.password);
+    if (isLandingPage()) redirectToApp();
     cachedMovements = await listTransactions(currentUser.uid);
     const summary = await getSummary(currentUser.uid);
     renderMovements(cachedMovements);
@@ -220,6 +223,7 @@ signupButton.addEventListener("click", async () => {
     setLoading(true);
     setStatus("Creating account...");
     currentUser = await register(payload.email, payload.password);
+    if (isLandingPage()) redirectToApp();
     const movements = await listTransactions(currentUser.uid);
     const summary = await getSummary(currentUser.uid);
     renderMovements(movements);
@@ -290,11 +294,9 @@ signOutForm.addEventListener("submit", async event => {
 });
 
 updateSummary({ income: 0, expense: 0, net: 0 });
-setAuthState(false);
 
 onAuthChange(user => {
   currentUser = user;
-  setAuthState(Boolean(user));
   if (!user) {
     cachedMovements = [];
     renderMovements([]);
