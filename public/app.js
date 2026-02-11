@@ -39,6 +39,9 @@ const isLandingPage = () => !isAppPage();
 const redirectToApp = () => {
   if (!isAppPage()) window.location.href = "app.html";
 };
+const redirectToLanding = () => {
+  if (isAppPage()) window.location.href = "index.html";
+};
 
 const setTheme = theme => {
   document.body.setAttribute("data-theme", theme);
@@ -285,6 +288,7 @@ signOutForm.addEventListener("submit", async event => {
     renderMovements([]);
     updateSummary({ income: 0, expense: 0, net: 0 });
     setStatus("Signed out");
+    redirectToLanding();
   } catch (error) {
     console.error(error);
     setStatus("Sign out failed", "error");
