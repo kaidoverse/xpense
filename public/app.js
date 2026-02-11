@@ -105,6 +105,10 @@ const setLoading = isLoading => {
   document.body.classList.toggle("is-loading", isLoading);
 };
 
+const setAuthState = isAuthenticated => {
+  document.body.classList.toggle("is-authenticated", isAuthenticated);
+};
+
 const clearFieldErrors = form => {
   if (!form) return;
   form.querySelectorAll(".is-invalid").forEach(field => {
@@ -205,6 +209,7 @@ loginForm.addEventListener("submit", async event => {
     setLoading(true);
     setStatus("Signing in...");
     currentUser = await login(payload.email, payload.password);
+    setAuthState(true);
     if (isLandingPage()) redirectToApp();
     cachedMovements = await listTransactions(currentUser.uid);
     const summary = await getSummary(currentUser.uid);
@@ -226,6 +231,7 @@ signupButton.addEventListener("click", async () => {
     setLoading(true);
     setStatus("Creating account...");
     currentUser = await register(payload.email, payload.password);
+    setAuthState(true);
     if (isLandingPage()) redirectToApp();
     const movements = await listTransactions(currentUser.uid);
     const summary = await getSummary(currentUser.uid);
@@ -288,6 +294,7 @@ signOutForm.addEventListener("submit", async event => {
     renderMovements([]);
     updateSummary({ income: 0, expense: 0, net: 0 });
     setStatus("Signed out");
+    setAuthState(false);
     redirectToLanding();
   } catch (error) {
     console.error(error);
@@ -298,13 +305,16 @@ signOutForm.addEventListener("submit", async event => {
 });
 
 updateSummary({ income: 0, expense: 0, net: 0 });
+setAuthState(false);
 
 onAuthChange(user => {
   currentUser = user;
+  setAuthState(Boolean(user));
   if (!user) {
     cachedMovements = [];
     renderMovements([]);
     updateSummary({ income: 0, expense: 0, net: 0 });
+    redirectToLanding();
   }
 });
 
