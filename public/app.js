@@ -1,6 +1,6 @@
 "use strict";
 
-import { login, logout, onAuthChange } from "./api/auth.js";
+import { login, logout, onAuthChange, register } from "./api/auth.js";
 import {
   addTransaction,
   getSummary,
@@ -11,6 +11,7 @@ const themeToggle = document.querySelector(".theme-toggle");
 const loginForm = document.querySelector(".login");
 const loginEmailInput = document.querySelector(".login__input--email");
 const loginPasswordInput = document.querySelector(".login__input--password");
+const signupButton = document.querySelector(".login__btn--secondary");
 const addForm = document.querySelector(".form--add");
 const addAmountInput = document.querySelector(".form__input--amount");
 const addTypeInput = document.querySelector(".form__input--type");
@@ -115,6 +116,27 @@ loginForm.addEventListener("submit", async event => {
   } catch (error) {
     console.error(error);
     setStatus("Sign in failed", "error");
+  } finally {
+    setLoading(false);
+  }
+});
+
+signupButton.addEventListener("click", async () => {
+  try {
+    setLoading(true);
+    setStatus("Creating account...");
+    currentUser = await register(
+      loginEmailInput.value,
+      loginPasswordInput.value
+    );
+    const movements = await listTransactions(currentUser.uid);
+    const summary = await getSummary(currentUser.uid);
+    renderMovements(movements);
+    updateSummary(summary);
+    setStatus("Account created", "success");
+  } catch (error) {
+    console.error(error);
+    setStatus("Sign up failed", "error");
   } finally {
     setLoading(false);
   }
