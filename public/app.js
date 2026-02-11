@@ -26,7 +26,9 @@ const summaryOut = document.querySelector(".summary__value--out");
 const summaryNet = document.querySelector(".summary__value--net");
 const movementsList = document.querySelector(".movements");
 const statusEl = document.querySelector(".status");
+const filterButton = document.querySelector(".btn--filter");
 let currentUser = null;
+let cachedMovements = [];
 
 const setTheme = theme => {
   document.body.setAttribute("data-theme", theme);
@@ -53,6 +55,7 @@ const renderMovements = movements => {
   movements.forEach(movement => {
     const row = document.createElement("div");
     row.className = "movements__row";
+    row.dataset.id = movement.id;
 
     const type = document.createElement("div");
     type.className = `movements__type movements__type--${movement.type}`;
@@ -66,7 +69,12 @@ const renderMovements = movements => {
     value.className = "movements__value";
     value.textContent = `${movement.type === "expense" ? "-" : ""}$${movement.amount.toFixed(2)}`;
 
-    row.append(type, date, value);
+    const deleteBtn = document.createElement("button");
+    deleteBtn.className = "movements__delete";
+    deleteBtn.type = "button";
+    deleteBtn.textContent = "Delete";
+
+    row.append(type, date, value, deleteBtn);
     movementsList.append(row);
   });
 };
@@ -82,15 +90,33 @@ const setLoading = isLoading => {
   document.body.classList.toggle("is-loading", isLoading);
 };
 
+const applyFilter = filter => {
+  if (filter === "income")
+    return cachedMovements.filter(item => item.type === "income");
+  if (filter === "expense")
+    return cachedMovements.filter(item => item.type === "expense");
+  return cachedMovements;
+};
+
+const setFilterButton = filter => {
+  filterButton.dataset.filter = filter;
+  filterButton.textContent =
+    filter === "all"
+      ? "Show income"
+      : filter === "income"
+        ? "Show expense"
+        : "Show all";
+};
+
 loginForm.addEventListener("submit", async event => {
   event.preventDefault();
   try {
     setLoading(true);
     setStatus("Signing in...");
     currentUser = await login(loginEmailInput.value, loginPasswordInput.value);
-    const movements = await listTransactions(currentUser.uid);
+    cachedMovements = await listTransactions(currentUser.uid);
     const summary = await getSummary(currentUser.uid);
-    renderMovements(movements);
+    renderMovements(cachedMovements);
     updateSummary(summary);
     setStatus("Signed in", "success");
   } catch (error) {
@@ -114,9 +140,9 @@ addForm.addEventListener("submit", async event => {
       date: "Today",
       category: categorySelect.value,
     });
-    const movements = await listTransactions(currentUser.uid);
+    cachedMovements = await listTransactions(currentUser.uid);
     const summary = await getSummary(currentUser.uid);
-    renderMovements(movements);
+    renderMovements(cachedMovements);
     updateSummary(summary);
     setStatus("Transaction added", "success");
     addAmountInput.value = "";
@@ -140,6 +166,7 @@ signOutForm.addEventListener("submit", async event => {
     setStatus("Signing out...");
     await logout();
     currentUser = null;
+    cachedMovements = [];
     renderMovements([]);
     updateSummary({ income: 0, expense: 0, net: 0 });
     setStatus("Signed out");
@@ -156,7 +183,41 @@ updateSummary({ income: 0, expense: 0, net: 0 });
 onAuthChange(user => {
   currentUser = user;
   if (!user) {
+    cachedMovements = [];
     renderMovements([]);
     updateSummary({ income: 0, expense: 0, net: 0 });
   }
 });
+
+filterButton.addEventListener("click", () => {
+  const current = filterButton.dataset.filter;
+  const next =
+    current === "all" ? "income" : current === "income" ? "expense" : "all";
+  setFilterButton(next);
+  renderMovements(applyFilter(next));
+});
+
+movementsList.addEventListener("click", async event => {
+  const target = event.target;
+  if (!target.classList.contains("movements__delete")) return;
+  if (!currentUser) return;
+  const row = target.closest(".movements__row");
+  if (!row?.dataset?.id) return;
+
+  try {
+    setLoading(true);
+    await deleteTransaction(currentUser.uid, row.dataset.id);
+    cachedMovements = await listTransactions(currentUser.uid);
+    const summary = await getSummary(currentUser.uid);
+    renderMovements(cachedMovements);
+    updateSummary(summary);
+    setStatus("Transaction deleted", "success");
+  } catch (error) {
+    console.error(error);
+    setStatus("Failed to delete transaction", "error");
+  } finally {
+    setLoading(false);
+  }
+});
+
+setFilterButton("all");
