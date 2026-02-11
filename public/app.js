@@ -3,6 +3,7 @@
 import { login, logout, onAuthChange, register } from "./api/auth.js";
 import {
   addTransaction,
+  deleteTransaction,
   getSummary,
   listTransactions,
 } from "./api/transactions.js";
@@ -66,7 +67,7 @@ const renderMovements = movements => {
 
     const date = document.createElement("div");
     date.className = "movements__date";
-    const categoryLabel = movement.category ? `• ${movement.category}` : "";
+    const categoryLabel = movement.category ? `? ${movement.category}` : "";
     date.textContent = `${movement.date || "Today"} ${categoryLabel}`.trim();
 
     const value = document.createElement("div");
@@ -95,6 +96,43 @@ const setLoading = isLoading => {
   document.body.classList.toggle("is-loading", isLoading);
 };
 
+const isValidEmail = email => /\S+@\S+\.\S+/.test(email);
+
+const requireAuthInputs = () => {
+  const email = loginEmailInput.value.trim();
+  const password = loginPasswordInput.value.trim();
+  if (!email || !password) {
+    setStatus("Email and password required", "error");
+    return null;
+  }
+  if (!isValidEmail(email)) {
+    setStatus("Enter a valid email", "error");
+    return null;
+  }
+  if (password.length < 6) {
+    setStatus("Password must be at least 6 characters", "error");
+    return null;
+  }
+  return { email, password };
+};
+
+const requireAmount = () => {
+  const amount = Number(addAmountInput.value);
+  if (!amount || amount <= 0) {
+    setStatus("Enter a valid amount", "error");
+    return null;
+  }
+  return amount;
+};
+
+const requireDate = () => {
+  if (!categoryDate.value) {
+    setStatus("Select a date", "error");
+    return null;
+  }
+  return categoryDate.value;
+};
+
 const applyFilter = filter => {
   if (filter === "income" || filter === "expense")
     return cachedMovements.filter(item => item.type === filter);
@@ -104,10 +142,12 @@ const applyFilter = filter => {
 
 loginForm.addEventListener("submit", async event => {
   event.preventDefault();
+  const payload = requireAuthInputs();
+  if (!payload) return;
   try {
     setLoading(true);
     setStatus("Signing in...");
-    currentUser = await login(loginEmailInput.value, loginPasswordInput.value);
+    currentUser = await login(payload.email, payload.password);
     cachedMovements = await listTransactions(currentUser.uid);
     const summary = await getSummary(currentUser.uid);
     renderMovements(cachedMovements);
@@ -122,13 +162,12 @@ loginForm.addEventListener("submit", async event => {
 });
 
 signupButton.addEventListener("click", async () => {
+  const payload = requireAuthInputs();
+  if (!payload) return;
   try {
     setLoading(true);
     setStatus("Creating account...");
-    currentUser = await register(
-      loginEmailInput.value,
-      loginPasswordInput.value
-    );
+    currentUser = await register(payload.email, payload.password);
     const movements = await listTransactions(currentUser.uid);
     const summary = await getSummary(currentUser.uid);
     renderMovements(movements);
@@ -144,15 +183,17 @@ signupButton.addEventListener("click", async () => {
 
 addForm.addEventListener("submit", async event => {
   event.preventDefault();
-  const amount = Number(addAmountInput.value);
+  const amount = requireAmount();
   if (!amount || !currentUser) return;
+  const date = requireDate();
+  if (!date) return;
   try {
     setLoading(true);
     setStatus("Adding transaction...");
     await addTransaction(currentUser.uid, {
       type: addTypeInput.value,
       amount,
-      date: categoryDate.value || "Today",
+      date,
       category: categorySelect.value,
       note: categoryNote.value || "",
     });
@@ -177,6 +218,8 @@ categoryForm.addEventListener("submit", event => {
 
 signOutForm.addEventListener("submit", async event => {
   event.preventDefault();
+  const payload = requireAuthInputs();
+  if (!payload) return;
   try {
     setLoading(true);
     setStatus("Signing out...");
