@@ -1,5 +1,12 @@
 "use strict";
 
+import { login, logout } from "./api/auth.js";
+import {
+  addTransaction,
+  getSummary,
+  listTransactions,
+} from "./api/transactions.js";
+
 const themeToggle = document.querySelector(".theme-toggle");
 const loginForm = document.querySelector(".login");
 const loginEmailInput = document.querySelector(".login__input--email");
@@ -62,14 +69,29 @@ const renderMovements = movements => {
   });
 };
 
-loginForm.addEventListener("submit", event => {
+loginForm.addEventListener("submit", async event => {
   event.preventDefault();
-  console.log("Login", loginEmailInput.value, loginPasswordInput.value);
+  await login(loginEmailInput.value, loginPasswordInput.value);
+  const movements = await listTransactions();
+  const summary = await getSummary();
+  renderMovements(movements);
+  updateSummary(summary);
 });
 
-addForm.addEventListener("submit", event => {
+addForm.addEventListener("submit", async event => {
   event.preventDefault();
-  console.log("Add transaction", addAmountInput.value, addTypeInput.value);
+  const amount = Number(addAmountInput.value);
+  if (!amount) return;
+  await addTransaction(null, {
+    type: addTypeInput.value,
+    amount,
+    date: "Today",
+    category: categorySelect.value,
+  });
+  const movements = await listTransactions();
+  const summary = await getSummary();
+  renderMovements(movements);
+  updateSummary(summary);
 });
 
 categoryForm.addEventListener("submit", event => {
@@ -77,13 +99,11 @@ categoryForm.addEventListener("submit", event => {
   console.log("Save category", categorySelect.value, categoryNote.value);
 });
 
-signOutForm.addEventListener("submit", event => {
+signOutForm.addEventListener("submit", async event => {
   event.preventDefault();
-  console.log("Sign out", signOutEmail.value, signOutPassword.value);
+  await logout();
+  renderMovements([]);
+  updateSummary({ income: 0, expense: 0, net: 0 });
 });
 
 updateSummary({ income: 0, expense: 0, net: 0 });
-renderMovements([
-  { type: "income", amount: 1250, date: "Today" },
-  { type: "expense", amount: 320, date: "Yesterday" },
-]);
