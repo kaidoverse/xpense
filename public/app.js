@@ -27,7 +27,7 @@ const summaryOut = document.querySelector(".summary__value--out");
 const summaryNet = document.querySelector(".summary__value--net");
 const movementsList = document.querySelector(".movements");
 const statusEl = document.querySelector(".status");
-const filterButton = document.querySelector(".btn--filter");
+const filterSelect = document.querySelector(".filter__select");
 let currentUser = null;
 let cachedMovements = [];
 
@@ -94,21 +94,10 @@ const setLoading = isLoading => {
 };
 
 const applyFilter = filter => {
-  if (filter === "income")
-    return cachedMovements.filter(item => item.type === "income");
-  if (filter === "expense")
-    return cachedMovements.filter(item => item.type === "expense");
-  return cachedMovements;
-};
-
-const setFilterButton = filter => {
-  filterButton.dataset.filter = filter;
-  filterButton.textContent =
-    filter === "all"
-      ? "Show income"
-      : filter === "income"
-        ? "Show expense"
-        : "Show all";
+  if (filter === "income" || filter === "expense")
+    return cachedMovements.filter(item => item.type === filter);
+  if (filter === "all") return cachedMovements;
+  return cachedMovements.filter(item => item.category === filter);
 };
 
 loginForm.addEventListener("submit", async event => {
@@ -193,12 +182,8 @@ onAuthChange(user => {
   }
 });
 
-filterButton.addEventListener("click", () => {
-  const current = filterButton.dataset.filter;
-  const next =
-    current === "all" ? "income" : current === "income" ? "expense" : "all";
-  setFilterButton(next);
-  renderMovements(applyFilter(next));
+filterSelect.addEventListener("change", () => {
+  renderMovements(applyFilter(filterSelect.value));
 });
 
 movementsList.addEventListener("click", async event => {
@@ -224,4 +209,4 @@ movementsList.addEventListener("click", async event => {
   }
 });
 
-setFilterButton("all");
+filterSelect.value = "all";

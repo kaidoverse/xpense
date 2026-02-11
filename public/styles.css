@@ -322,16 +322,20 @@ body[data-theme="light"] .login__input {
   color: var(--ink);
 }
 
-.btn--filter {
+.filter__select {
   margin-left: auto;
   border: 1px solid rgba(214, 178, 109, 0.5);
   background: transparent;
   color: var(--ink);
-  padding: 0.5rem 1rem;
+  padding: 0.45rem 0.9rem;
   border-radius: 0.3rem;
   text-transform: uppercase;
-  letter-spacing: 0.15rem;
-  cursor: pointer;
+  letter-spacing: 0.12rem;
+  font-size: 0.7rem;
+}
+
+.filter__select:focus {
+  outline: 2px solid rgba(214, 178, 109, 0.35);
 }
 
 .operation {
