@@ -53,6 +53,7 @@ body {
   background: var(--bg-overlay), var(--bg);
   min-height: 100vh;
   padding: 2.5rem clamp(1.5rem, 3vw, 3.5rem);
+  overflow-x: hidden;
 }
 
 h1,
@@ -67,6 +68,7 @@ h2 {
   align-items: center;
   justify-content: space-between;
   gap: 1.5rem;
+  flex-wrap: wrap;
   padding-bottom: 1.5rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   margin-bottom: 2.5rem;
@@ -117,6 +119,7 @@ body[data-theme="light"] .theme-toggle {
   display: flex;
   gap: 0.75rem;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 .login__input {
@@ -303,6 +306,7 @@ body[data-theme="light"] .login__btn--secondary {
   align-items: center;
   gap: 1.5rem;
   padding: 0.5rem 1rem;
+  flex-wrap: wrap;
 }
 
 .summary__label {
@@ -418,6 +422,13 @@ body[data-theme="light"] .login__btn--secondary {
   font-size: 0.9rem;
   padding: 0.5rem 0.8rem;
   border-radius: 0.3rem;
+}
+
+.filter__select,
+.filter__clear,
+.login__btn,
+.login__input {
+  max-width: 100%;
 }
 
 body[data-theme="light"] .form__input {
