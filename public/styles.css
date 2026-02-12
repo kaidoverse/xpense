@@ -252,6 +252,12 @@ body[data-theme="light"] .login__btn--secondary {
   border-bottom: none;
 }
 
+.movements__row--selected {
+  outline: 2px solid rgba(214, 178, 109, 0.55);
+  outline-offset: -2px;
+  background: rgba(214, 178, 109, 0.08);
+}
+
 .movements__type {
   font-size: 0.75rem;
   font-weight: 600;

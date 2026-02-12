@@ -1,353 +1,43 @@
 "use strict";
 
-import { login, logout, onAuthChange, register } from "./api/auth.js";
+import { onAuthChange as watchAuthChange } from "./api/auth.js";
 import {
-  addTransaction,
-  deleteTransaction,
-  getSummary,
-  listTransactions,
-} from "./api/transactions.js";
-
-const themeToggle = document.querySelector(".theme-toggle");
-const loginForm = document.querySelector(".login");
-const loginEmailInput = document.querySelector(".login__input--email");
-const loginPasswordInput = document.querySelector(".login__input--password");
-const signupButton = document.querySelector(".login__btn--secondary");
-const addForm = document.querySelector(".form--add");
-const addAmountInput = document.querySelector(".form__input--amount");
-const addTypeInput = document.querySelector(".form__input--type");
-const categoryForm = document.querySelector(".form--category");
-const categorySelect = document.querySelector(".form__input--category");
-const categoryDate = document.querySelector(".form__input--date");
-const categoryNote = document.querySelector(".form__input--note");
-const signOutForm = document.querySelector(".form--close");
-const signOutEmail = document.querySelector(".form__input--email");
-const signOutPassword = document.querySelector(".form__input--password");
-const balanceValue = document.querySelector(".balance__value");
-const summaryIn = document.querySelector(".summary__value--in");
-const summaryOut = document.querySelector(".summary__value--out");
-const summaryNet = document.querySelector(".summary__value--net");
-const movementsList = document.querySelector(".movements");
-const statusEl = document.querySelector(".status");
-const filterSelect = document.querySelector(".filter__select");
-const filterClear = document.querySelector(".filter__clear");
-let currentUser = null;
-let cachedMovements = [];
-
-const isAppPage = () => window.location.pathname.endsWith("/app.html");
-const isLandingPage = () => !isAppPage();
-const redirectToApp = () => {
-  if (!isAppPage()) window.location.href = "app.html";
-};
-const redirectToLanding = () => {
-  if (isAppPage()) window.location.href = "index.html";
-};
-
-const setTheme = theme => {
-  document.body.setAttribute("data-theme", theme);
-  themeToggle.textContent = theme === "dark" ? "Light mode" : "Dark mode";
-};
+  addForm,
+  categoryForm,
+  filterClear,
+  filterSelect,
+  loginForm,
+  movementsList,
+  signOutForm,
+  signupButton,
+  themeToggle,
+} from "./app/dom.js";
+import {
+  onAddSubmit,
+  onAuthChange,
+  onCategorySubmit,
+  onFilterChange,
+  onFilterClear,
+  onLoginSubmit,
+  onMovementsClick,
+  onSignOutSubmit,
+  onSignupClick,
+  onThemeToggle,
+} from "./app/handlers.js";
+import { setAuthState, setTheme, updateSummary } from "./app/ui.js";
 
 setTheme("dark");
-
-themeToggle.addEventListener("click", () => {
-  const nextTheme =
-    document.body.getAttribute("data-theme") === "dark" ? "light" : "dark";
-  setTheme(nextTheme);
-});
-
-const updateSummary = ({ income, expense, net }) => {
-  balanceValue.textContent = `$${net.toFixed(2)}`;
-  summaryIn.textContent = `$${income.toFixed(2)}`;
-  summaryOut.textContent = `$${expense.toFixed(2)}`;
-  summaryNet.textContent = `$${net.toFixed(2)}`;
-};
-
-const renderMovements = movements => {
-  movementsList.innerHTML = "";
-  movements.forEach(movement => {
-    const row = document.createElement("div");
-    row.className = "movements__row";
-    row.dataset.id = movement.id;
-
-    const type = document.createElement("div");
-    type.className = `movements__type movements__type--${movement.type}`;
-    type.textContent = movement.type === "income" ? "Income" : "Expense";
-
-    const date = document.createElement("div");
-    date.className = "movements__date";
-    const categoryLabel = movement.category ? `? ${movement.category}` : "";
-    date.textContent = `${movement.date || "Today"} ${categoryLabel}`.trim();
-
-    const value = document.createElement("div");
-    value.className = "movements__value";
-    value.textContent = `${movement.type === "expense" ? "-" : ""}$${movement.amount.toFixed(2)}`;
-    if (movement.note) value.title = movement.note;
-
-    const deleteBtn = document.createElement("button");
-    deleteBtn.className = "movements__delete";
-    deleteBtn.type = "button";
-    deleteBtn.textContent = "Delete";
-
-    row.append(type, date, value, deleteBtn);
-    movementsList.append(row);
-  });
-};
-
-const setStatus = (message, tone = "info") => {
-  statusEl.textContent = message || "";
-  statusEl.classList.remove("is-error", "is-success");
-  if (tone === "error") statusEl.classList.add("is-error");
-  if (tone === "success") statusEl.classList.add("is-success");
-};
-
-const setLoading = isLoading => {
-  document.body.classList.toggle("is-loading", isLoading);
-};
-
-const setAuthState = isAuthenticated => {
-  document.body.classList.toggle("is-authenticated", isAuthenticated);
-};
-
-const clearFieldErrors = form => {
-  if (!form) return;
-  form.querySelectorAll(".is-invalid").forEach(field => {
-    field.classList.remove("is-invalid");
-  });
-  form.querySelectorAll(".field-error").forEach(node => node.remove());
-};
-
-const showFieldError = (field, message) => {
-  if (!field) return;
-  field.classList.add("is-invalid");
-  const error = document.createElement("div");
-  error.className = "field-error";
-  error.textContent = message;
-  field.insertAdjacentElement("afterend", error);
-};
-
-const isValidEmail = email => /\S+@\S+\.\S+/.test(email);
-
-const requireAuthInputs = () => {
-  clearFieldErrors(loginForm);
-  const email = loginEmailInput.value.trim();
-  const password = loginPasswordInput.value.trim();
-  if (!email || !password) {
-    if (!email) showFieldError(loginEmailInput, "Email required");
-    if (!password) showFieldError(loginPasswordInput, "Password required");
-    setStatus("Email and password required", "error");
-    return null;
-  }
-  if (!isValidEmail(email)) {
-    showFieldError(loginEmailInput, "Invalid email");
-    setStatus("Enter a valid email", "error");
-    return null;
-  }
-  if (password.length < 6) {
-    showFieldError(loginPasswordInput, "Min 6 characters");
-    setStatus("Password must be at least 6 characters", "error");
-    return null;
-  }
-  return { email, password };
-};
-
-const requireAmount = () => {
-  clearFieldErrors(addForm);
-  const amount = Number(addAmountInput.value);
-  if (!amount || amount <= 0) {
-    showFieldError(addAmountInput, "Enter amount");
-    setStatus("Enter a valid amount", "error");
-    return null;
-  }
-  return amount;
-};
-
-const requireDate = () => {
-  clearFieldErrors(categoryForm);
-  if (!categoryDate.value) {
-    showFieldError(categoryDate, "Select date");
-    setStatus("Select a date", "error");
-    return null;
-  }
-  return categoryDate.value;
-};
-
-const getAuthErrorMessage = error => {
-  const code = error?.code || "";
-  if (code === "auth/email-already-in-use") {
-    showFieldError(loginEmailInput, "Email already registered");
-    return "Email already registered. Sign in instead.";
-  }
-  if (code === "auth/invalid-credential" || code === "auth/user-not-found") {
-    showFieldError(loginEmailInput, "Check email");
-    showFieldError(loginPasswordInput, "Check password");
-    return "Invalid credentials. Check email/password.";
-  }
-  if (code === "auth/wrong-password") {
-    showFieldError(loginPasswordInput, "Wrong password");
-    return "Wrong password.";
-  }
-  if (code === "auth/weak-password") {
-    showFieldError(loginPasswordInput, "Weak password");
-    return "Password is too weak.";
-  }
-  return "Authentication failed";
-};
-
-const applyFilter = filter => {
-  if (filter === "income" || filter === "expense")
-    return cachedMovements.filter(item => item.type === filter);
-  if (filter === "all") return cachedMovements;
-  return cachedMovements.filter(item => item.category === filter);
-};
-
-loginForm.addEventListener("submit", async event => {
-  event.preventDefault();
-  const payload = requireAuthInputs();
-  if (!payload) return;
-  try {
-    setLoading(true);
-    setStatus("Signing in...");
-    currentUser = await login(payload.email, payload.password);
-    setAuthState(true);
-    if (isLandingPage()) redirectToApp();
-    cachedMovements = await listTransactions(currentUser.uid);
-    const summary = await getSummary(currentUser.uid);
-    renderMovements(cachedMovements);
-    updateSummary(summary);
-    setStatus("Signed in", "success");
-  } catch (error) {
-    console.error(error);
-    setStatus(getAuthErrorMessage(error), "error");
-  } finally {
-    setLoading(false);
-  }
-});
-
-signupButton.addEventListener("click", async () => {
-  const payload = requireAuthInputs();
-  if (!payload) return;
-  try {
-    setLoading(true);
-    setStatus("Creating account...");
-    currentUser = await register(payload.email, payload.password);
-    setAuthState(true);
-    if (isLandingPage()) redirectToApp();
-    const movements = await listTransactions(currentUser.uid);
-    const summary = await getSummary(currentUser.uid);
-    renderMovements(movements);
-    updateSummary(summary);
-    setStatus("Account created", "success");
-  } catch (error) {
-    console.error(error);
-    setStatus(getAuthErrorMessage(error), "error");
-  } finally {
-    setLoading(false);
-  }
-});
-
-addForm.addEventListener("submit", async event => {
-  event.preventDefault();
-  const amount = requireAmount();
-  if (!amount || !currentUser) return;
-  const date = requireDate();
-  if (!date) return;
-  try {
-    setLoading(true);
-    setStatus("Adding transaction...");
-    await addTransaction(currentUser.uid, {
-      type: addTypeInput.value,
-      amount,
-      date,
-      category: categorySelect.value,
-      note: categoryNote.value || "",
-    });
-    cachedMovements = await listTransactions(currentUser.uid);
-    const summary = await getSummary(currentUser.uid);
-    renderMovements(cachedMovements);
-    updateSummary(summary);
-    setStatus("Transaction added", "success");
-    addAmountInput.value = "";
-  } catch (error) {
-    console.error(error);
-    setStatus("Failed to add transaction", "error");
-  } finally {
-    setLoading(false);
-  }
-});
-
-categoryForm.addEventListener("submit", event => {
-  event.preventDefault();
-  console.log("Save category", categorySelect.value, categoryNote.value);
-});
-
-signOutForm.addEventListener("submit", async event => {
-  event.preventDefault();
-  const payload = requireAuthInputs();
-  if (!payload) return;
-  try {
-    setLoading(true);
-    setStatus("Signing out...");
-    await logout();
-    currentUser = null;
-    cachedMovements = [];
-    renderMovements([]);
-    updateSummary({ income: 0, expense: 0, net: 0 });
-    setStatus("Signed out");
-    setAuthState(false);
-    redirectToLanding();
-  } catch (error) {
-    console.error(error);
-    setStatus("Sign out failed", "error");
-  } finally {
-    setLoading(false);
-  }
-});
-
 updateSummary({ income: 0, expense: 0, net: 0 });
 setAuthState(false);
-
-onAuthChange(user => {
-  currentUser = user;
-  setAuthState(Boolean(user));
-  if (!user) {
-    cachedMovements = [];
-    renderMovements([]);
-    updateSummary({ income: 0, expense: 0, net: 0 });
-    redirectToLanding();
-  }
-});
-
-filterSelect.addEventListener("change", () => {
-  renderMovements(applyFilter(filterSelect.value));
-});
-
-filterClear.addEventListener("click", () => {
-  filterSelect.value = "all";
-  renderMovements(cachedMovements);
-});
-
-movementsList.addEventListener("click", async event => {
-  const target = event.target;
-  if (!target.classList.contains("movements__delete")) return;
-  if (!currentUser) return;
-  const row = target.closest(".movements__row");
-  if (!row?.dataset?.id) return;
-
-  try {
-    setLoading(true);
-    await deleteTransaction(currentUser.uid, row.dataset.id);
-    cachedMovements = await listTransactions(currentUser.uid);
-    const summary = await getSummary(currentUser.uid);
-    renderMovements(cachedMovements);
-    updateSummary(summary);
-    setStatus("Transaction deleted", "success");
-  } catch (error) {
-    console.error(error);
-    setStatus("Failed to delete transaction", "error");
-  } finally {
-    setLoading(false);
-  }
-});
-
 filterSelect.value = "all";
+
+themeToggle.addEventListener("click", onThemeToggle);
+loginForm.addEventListener("submit", onLoginSubmit);
+signupButton.addEventListener("click", onSignupClick);
+addForm.addEventListener("submit", onAddSubmit);
+categoryForm.addEventListener("submit", onCategorySubmit);
+signOutForm.addEventListener("submit", onSignOutSubmit);
+filterSelect.addEventListener("change", onFilterChange);
+filterClear.addEventListener("click", onFilterClear);
+movementsList.addEventListener("click", onMovementsClick);
+watchAuthChange(onAuthChange);
