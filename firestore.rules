@@ -2,10 +2,63 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     match /transactions/{transactionId} {
-      allow read, write: if request.auth != null
-        && request.auth.uid == resource.data.userId;
-      allow create: if request.auth != null
-        && request.auth.uid == request.resource.data.userId;
+      function isSignedIn() {
+        return request.auth != null;
+      }
+
+      function isOwner() {
+        return isSignedIn() && resource.data.userId == request.auth.uid;
+      }
+
+      function hasValidShape() {
+        return request.resource.data.keys().hasAll([
+            'amount',
+            'category',
+            'createdAt',
+            'date',
+            'note',
+            'type',
+            'updatedAt',
+            'userId'
+          ])
+          && request.resource.data.keys().hasOnly([
+            'amount',
+            'category',
+            'createdAt',
+            'date',
+            'note',
+            'type',
+            'updatedAt',
+            'userId'
+          ])
+          && request.resource.data.userId is string
+          && request.resource.data.userId == request.auth.uid
+          && request.resource.data.type is string
+          && (request.resource.data.type == 'income' || request.resource.data.type == 'expense')
+          && request.resource.data.amount is number
+          && request.resource.data.amount > 0
+          && request.resource.data.category is string
+          && request.resource.data.category.size() > 0
+          && request.resource.data.category.size() <= 50
+          && request.resource.data.note is string
+          && request.resource.data.note.size() <= 500
+          && request.resource.data.date is string
+          && request.resource.data.date.matches('^\\d{4}-\\d{2}-\\d{2}$')
+          && request.resource.data.createdAt is timestamp
+          && request.resource.data.updatedAt is timestamp;
+      }
+
+      allow get, list: if isOwner();
+
+      allow create: if isSignedIn()
+        && hasValidShape();
+
+      allow update: if isOwner()
+        && hasValidShape()
+        && request.resource.data.userId == resource.data.userId
+        && request.resource.data.createdAt == resource.data.createdAt;
+
+      allow delete: if isOwner();
     }
   }
 }

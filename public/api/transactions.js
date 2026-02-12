@@ -9,6 +9,7 @@ import {
   orderBy,
   query,
   serverTimestamp,
+  updateDoc,
   where,
 } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 import { db } from "../firebase.js";
@@ -33,9 +34,18 @@ export async function addTransaction(userId, tx) {
     ...tx,
     userId,
     createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
   };
   const docRef = await addDoc(ref, payload);
   return { id: docRef.id, ...payload };
+}
+
+export async function updateTransaction(_, id, patch) {
+  const txRef = doc(db, collectionName, id);
+  await updateDoc(txRef, {
+    ...patch,
+    updatedAt: serverTimestamp(),
+  });
 }
 
 export async function deleteTransaction(_, id) {
