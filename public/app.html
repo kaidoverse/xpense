@@ -18,11 +18,15 @@
       <form class="login" aria-label="Login">
         <input
           type="email"
+          id="login-email"
+          name="loginEmail"
           placeholder="email"
           class="login__input login__input--email"
         />
         <input
           type="password"
+          id="login-password"
+          name="loginPassword"
           placeholder="password"
           class="login__input login__input--password"
         />
@@ -66,7 +70,12 @@
         <p class="summary__value summary__value--out">$0.00</p>
         <p class="summary__label">Net</p>
         <p class="summary__value summary__value--net">$0.00</p>
-        <select class="filter__select" aria-label="Filter">
+        <select
+          id="filter-select"
+          name="filter"
+          class="filter__select"
+          aria-label="Filter"
+        >
           <option value="all">All</option>
           <option value="income">Income</option>
           <option value="expense">Expense</option>
@@ -84,24 +93,36 @@
         <form class="form form--add">
           <input
             type="number"
+            id="add-amount"
+            name="amount"
             inputmode="decimal"
             class="form__input form__input--amount"
             placeholder="Amount"
           />
-          <select class="form__input form__input--type" aria-label="Type">
+          <select
+            id="add-type"
+            name="type"
+            class="form__input form__input--type"
+            aria-label="Type"
+          >
             <option value="income">Income</option>
             <option value="expense">Expense</option>
           </select>
           <button class="form__btn form__btn--add" type="submit">Add</button>
-          <label class="form__label">Amount</label>
-          <label class="form__label">Type</label>
+          <label class="form__label" for="add-amount">Amount</label>
+          <label class="form__label" for="add-type">Type</label>
         </form>
       </section>
 
       <section class="operation operation--category">
         <h2>Details</h2>
         <form class="form form--category">
-          <select class="form__input form__input--category" aria-label="Category">
+          <select
+            id="detail-category"
+            name="category"
+            class="form__input form__input--category"
+            aria-label="Category"
+          >
             <option value="salary">Salary</option>
             <option value="rent">Rent</option>
             <option value="food">Food</option>
@@ -110,20 +131,24 @@
           </select>
           <input
             type="date"
+            id="detail-date"
+            name="date"
             class="form__input form__input--date"
             aria-label="Date"
           />
           <input
             type="text"
+            id="detail-note"
+            name="note"
             class="form__input form__input--note"
             placeholder="Note"
           />
           <button class="form__btn form__btn--category" type="submit">
             Save
           </button>
-          <label class="form__label">Category</label>
-          <label class="form__label">Date</label>
-          <label class="form__label">Note</label>
+          <label class="form__label" for="detail-category">Category</label>
+          <label class="form__label" for="detail-date">Date</label>
+          <label class="form__label" for="detail-note">Note</label>
         </form>
       </section>
 
@@ -132,19 +157,23 @@
         <form class="form form--close">
           <input
             type="email"
+            id="close-email"
+            name="closeEmail"
             class="form__input form__input--email"
             placeholder="Email"
           />
           <input
             type="password"
+            id="close-password"
+            name="closePassword"
             class="form__input form__input--password"
             placeholder="Password"
           />
           <button class="form__btn form__btn--close" type="submit">
             Sign out
           </button>
-          <label class="form__label">Confirm email</label>
-          <label class="form__label">Confirm password</label>
+          <label class="form__label" for="close-email">Confirm email</label>
+          <label class="form__label" for="close-password">Confirm password</label>
         </form>
       </section>
 
