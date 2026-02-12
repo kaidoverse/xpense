@@ -1,1 +1,5 @@
 reference/
+public/firebase-config.local.js
+*.env
+*.env.*
+!.env.example
