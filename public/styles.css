@@ -272,6 +272,7 @@ body.is-authenticated .login {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: nowrap;
   gap: 0.75rem;
   padding: 0.8rem 1rem;
   border-bottom: 1px solid var(--line);
@@ -282,14 +283,20 @@ body.is-authenticated .login {
   margin: 0;
   font-size: 1rem;
   font-weight: 800;
+  white-space: nowrap;
 }
 
 .movements__filters {
   display: flex;
   align-items: center;
   gap: 0.45rem;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   justify-content: flex-end;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  padding-bottom: 0.1rem;
 }
 
 .movements__list {
@@ -767,10 +774,27 @@ body:not(.is-authenticated) .operation--add {
 
   .movements__filters {
     justify-content: stretch;
+    flex-wrap: wrap;
+    overflow-x: visible;
   }
 
   .movements__filters > * {
+    width: auto;
+    max-width: 100%;
+  }
+
+  .range-filter {
     width: 100%;
+    justify-content: space-between;
+  }
+
+  .filter__select {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .filter__clear {
+    flex: 0 0 auto;
   }
 
   .movements__value {
