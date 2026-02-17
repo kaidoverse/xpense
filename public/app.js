@@ -8,6 +8,7 @@ import {
   filterSelect,
   loginForm,
   movementsList,
+  rangeFilter,
   signOutButton,
   signupButton,
   themeToggle,
@@ -20,17 +21,25 @@ import {
   onFilterClear,
   onLoginSubmit,
   onMovementsClick,
+  onRangeFilterClick,
   onSignOutClick,
   onSignupClick,
   onThemeToggle,
 } from "./app/handlers.js";
-import { setAuthState, setCurrentDate, setTheme, updateSummary } from "./app/ui.js";
+import {
+  setActiveRangeButton,
+  setAuthState,
+  setCurrentDate,
+  setTheme,
+  updateSummary,
+} from "./app/ui.js";
 
 setTheme("light");
 setCurrentDate();
 updateSummary({ income: 0, expense: 0, net: 0 });
 setAuthState(false);
 filterSelect.value = "all";
+setActiveRangeButton("all");
 
 themeToggle.addEventListener("click", onThemeToggle);
 loginForm.addEventListener("submit", onLoginSubmit);
@@ -40,5 +49,6 @@ addCancelButton.addEventListener("click", onCancelEditClick);
 signOutButton.addEventListener("click", onSignOutClick);
 filterSelect.addEventListener("change", onFilterChange);
 filterClear.addEventListener("click", onFilterClear);
+rangeFilter.addEventListener("click", onRangeFilterClick);
 movementsList.addEventListener("click", onMovementsClick);
 watchAuthChange(onAuthChange);

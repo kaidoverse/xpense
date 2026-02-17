@@ -50,7 +50,47 @@
 
       <p class="status" role="status" aria-live="polite"></p>
 
-      <section class="movements" aria-label="Transactions"></section>
+      <section class="movements" aria-label="Transactions">
+        <div class="movements__head">
+          <h3 class="movements__title">Transactions</h3>
+          <div class="movements__filters">
+            <div class="range-filter" role="group" aria-label="Date range">
+              <button class="range-filter__btn is-active" type="button" data-range="all">
+                All
+              </button>
+              <button class="range-filter__btn" type="button" data-range="today">
+                Today
+              </button>
+              <button class="range-filter__btn" type="button" data-range="7d">
+                7D
+              </button>
+              <button class="range-filter__btn" type="button" data-range="30d">
+                30D
+              </button>
+              <button class="range-filter__btn" type="button" data-range="month">
+                This Month
+              </button>
+            </div>
+            <select
+              id="filter-select"
+              name="filter"
+              class="filter__select"
+              aria-label="Filter"
+            >
+              <option value="all">All</option>
+              <option value="income">Income</option>
+              <option value="expense">Expense</option>
+              <option value="salary">Salary</option>
+              <option value="rent">Rent</option>
+              <option value="food">Food</option>
+              <option value="transport">Transport</option>
+              <option value="misc">Misc</option>
+            </select>
+            <button class="filter__clear" type="button">Clear</button>
+          </div>
+        </div>
+        <div class="movements__list"></div>
+      </section>
 
       <section class="summary" aria-label="Summary">
         <p class="summary__label">In</p>
@@ -59,22 +99,6 @@
         <p class="summary__value summary__value--out">$0.00</p>
         <p class="summary__label">Net</p>
         <p class="summary__value summary__value--net">$0.00</p>
-        <select
-          id="filter-select"
-          name="filter"
-          class="filter__select"
-          aria-label="Filter"
-        >
-          <option value="all">All</option>
-          <option value="income">Income</option>
-          <option value="expense">Expense</option>
-          <option value="salary">Salary</option>
-          <option value="rent">Rent</option>
-          <option value="food">Food</option>
-          <option value="transport">Transport</option>
-          <option value="misc">Misc</option>
-        </select>
-        <button class="filter__clear" type="button">Clear</button>
       </section>
 
       <section class="operation operation--add">

@@ -4,11 +4,11 @@ import { login, logout, register } from "../api/auth.js";
 import {
   addTransaction,
   deleteTransaction,
-  getSummary,
   listTransactions,
   updateTransaction,
 } from "../api/transactions.js";
 import {
+  filterSelect,
   addTypeInput,
   categoryNote,
   categorySelect,
@@ -25,19 +25,70 @@ import {
   updateSummary,
 } from "./ui.js";
 
-export const applyFilter = filter => {
-  if (filter === "income" || filter === "expense") {
-    return appState.cachedMovements.filter(item => item.type === filter);
+const summarizeMovements = movements => {
+  const income = movements
+    .filter(item => item.type === "income")
+    .reduce((sum, item) => sum + item.amount, 0);
+  const expense = movements
+    .filter(item => item.type === "expense")
+    .reduce((sum, item) => sum + item.amount, 0);
+  return { income, expense, net: income - expense };
+};
+
+const toDayStart = date => {
+  const day = new Date(date);
+  day.setHours(0, 0, 0, 0);
+  return day;
+};
+
+const isInRange = (dateValue, range) => {
+  if (range === "all") return true;
+  const value = toDayStart(dateValue);
+  const today = toDayStart(new Date());
+
+  if (range === "today") {
+    return value.getTime() === today.getTime();
   }
-  if (filter === "all") return appState.cachedMovements;
-  return appState.cachedMovements.filter(item => item.category === filter);
+  if (range === "7d") {
+    const start = toDayStart(new Date(today));
+    start.setDate(start.getDate() - 6);
+    return value >= start && value <= today;
+  }
+  if (range === "30d") {
+    const start = toDayStart(new Date(today));
+    start.setDate(start.getDate() - 29);
+    return value >= start && value <= today;
+  }
+  if (range === "month") {
+    return (
+      value.getFullYear() === today.getFullYear() &&
+      value.getMonth() === today.getMonth()
+    );
+  }
+  return true;
+};
+
+export const getFilteredMovements = () => {
+  let movements = appState.cachedMovements;
+  const categoryFilter = filterSelect.value;
+  if (categoryFilter === "income" || categoryFilter === "expense") {
+    movements = movements.filter(item => item.type === categoryFilter);
+  } else if (categoryFilter !== "all") {
+    movements = movements.filter(item => item.category === categoryFilter);
+  }
+
+  return movements.filter(item => isInRange(item.date, appState.dateRange));
+};
+
+export const renderFilteredDashboard = () => {
+  const filtered = getFilteredMovements();
+  renderMovements(filtered);
+  updateSummary(summarizeMovements(filtered));
 };
 
 const refreshDashboard = async () => {
   setCachedMovements(await listTransactions(appState.currentUser.uid));
-  const summary = await getSummary(appState.currentUser.uid);
-  renderMovements(appState.cachedMovements);
-  updateSummary(summary);
+  renderFilteredDashboard();
 };
 
 export const signIn = async payload => {

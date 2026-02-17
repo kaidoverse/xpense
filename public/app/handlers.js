@@ -2,7 +2,13 @@
 
 import { appState, setEditingTransactionId } from "./state.js";
 import { addAmountInput, categoryNote, filterSelect } from "./dom.js";
-import { enterEditMode, exitEditMode, renderMovements, setStatus, setTheme } from "./ui.js";
+import {
+  enterEditMode,
+  exitEditMode,
+  setActiveRangeButton,
+  setStatus,
+  setTheme,
+} from "./ui.js";
 import {
   getAuthErrorMessage,
   requireAmount,
@@ -10,15 +16,16 @@ import {
   requireDate,
 } from "./validation.js";
 import {
-  applyFilter,
   createTransaction,
   deleteTransactionById,
   editTransaction,
   handleAuthState,
+  renderFilteredDashboard,
   signIn,
   signOutUser,
   signUp,
 } from "./services.js";
+import { setDateRange } from "./state.js";
 
 export const onThemeToggle = () => {
   const nextTheme =
@@ -95,12 +102,22 @@ export const onAuthChange = async user => {
 };
 
 export const onFilterChange = () => {
-  renderMovements(applyFilter(filterSelect.value));
+  renderFilteredDashboard();
 };
 
 export const onFilterClear = () => {
   filterSelect.value = "all";
-  renderMovements(appState.cachedMovements);
+  setDateRange("all");
+  setActiveRangeButton("all");
+  renderFilteredDashboard();
+};
+
+export const onRangeFilterClick = event => {
+  const button = event.target.closest(".range-filter__btn");
+  if (!button) return;
+  setDateRange(button.dataset.range || "all");
+  setActiveRangeButton(button.dataset.range || "all");
+  renderFilteredDashboard();
 };
 
 export const onMovementsClick = async event => {

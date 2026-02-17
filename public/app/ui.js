@@ -12,6 +12,7 @@ import {
   categoryNote,
   categorySelect,
   movementsList,
+  rangeFilterButtons,
   statusEl,
   summaryIn,
   summaryNet,
@@ -115,6 +116,12 @@ export const setLoading = isLoading => {
 
 export const setAuthState = isAuthenticated => {
   document.body.classList.toggle("is-authenticated", isAuthenticated);
+};
+
+export const setActiveRangeButton = range => {
+  rangeFilterButtons.forEach(button => {
+    button.classList.toggle("is-active", button.dataset.range === range);
+  });
 };
 
 export const enterEditMode = transaction => {

@@ -20,10 +20,12 @@ export const balanceDate = document.querySelector(".date");
 export const summaryIn = document.querySelector(".summary__value--in");
 export const summaryOut = document.querySelector(".summary__value--out");
 export const summaryNet = document.querySelector(".summary__value--net");
-export const movementsList = document.querySelector(".movements");
+export const movementsList = document.querySelector(".movements__list");
 export const statusEl = document.querySelector(".status");
 export const filterSelect = document.querySelector(".filter__select");
 export const filterClear = document.querySelector(".filter__clear");
+export const rangeFilter = document.querySelector(".range-filter");
+export const rangeFilterButtons = document.querySelectorAll(".range-filter__btn");
 
 export const isAppPage = () => window.location.pathname.endsWith("/app.html");
 export const isLandingPage = () => !isAppPage();
