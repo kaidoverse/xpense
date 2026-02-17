@@ -42,8 +42,7 @@ service cloud.firestore {
           && request.resource.data.category.size() <= 50
           && request.resource.data.note is string
           && request.resource.data.note.size() <= 500
-          && request.resource.data.date is string
-          && request.resource.data.date.matches('^\\d{4}-\\d{2}-\\d{2}$')
+          && request.resource.data.date is timestamp
           && request.resource.data.createdAt is timestamp
           && request.resource.data.updatedAt is timestamp;
       }
