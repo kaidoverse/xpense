@@ -352,6 +352,14 @@ body.is-authenticated .login {
   overflow-wrap: anywhere;
 }
 
+.movements__actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-left: 0.5rem;
+  white-space: nowrap;
+}
+
 .movements__delete {
   border: 1px solid color-mix(in srgb, var(--danger) 35%, var(--line));
   background: transparent;
@@ -799,6 +807,12 @@ body:not(.is-authenticated) .operation--add {
 
   .movements__value {
     margin-left: 0;
+  }
+
+  .movements__actions {
+    margin-left: 0;
+    width: 100%;
+    justify-content: flex-start;
   }
 
   .operation {

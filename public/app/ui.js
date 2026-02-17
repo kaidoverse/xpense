@@ -99,7 +99,11 @@ export const renderMovements = movements => {
     editBtn.type = "button";
     editBtn.textContent = "Edit";
 
-    row.append(type, date, value, editBtn, deleteBtn);
+    const actions = document.createElement("div");
+    actions.className = "movements__actions";
+    actions.append(editBtn, deleteBtn);
+
+    row.append(type, date, value, actions);
     movementsList.append(row);
   });
 };
