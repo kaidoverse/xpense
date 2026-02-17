@@ -6,6 +6,7 @@ import {
   deleteTransaction,
   getSummary,
   listTransactions,
+  updateTransaction,
 } from "../api/transactions.js";
 import {
   addTypeInput,
@@ -82,6 +83,24 @@ export const createTransaction = async ({ amount, date }) => {
     });
     await refreshDashboard();
     setStatus("Transaction added", "success");
+  } finally {
+    setLoading(false);
+  }
+};
+
+export const editTransaction = async (id, { amount, date }) => {
+  setLoading(true);
+  try {
+    setStatus("Saving transaction...");
+    await updateTransaction(appState.currentUser.uid, id, {
+      type: addTypeInput.value,
+      amount,
+      date,
+      category: categorySelect.value,
+      note: categoryNote.value || "",
+    });
+    await refreshDashboard();
+    setStatus("Transaction updated", "success");
   } finally {
     setLoading(false);
   }

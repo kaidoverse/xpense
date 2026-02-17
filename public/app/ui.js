@@ -1,8 +1,16 @@
 "use strict";
 
 import {
+  addAmountInput,
+  addCancelButton,
+  addFormTitle,
+  addSubmitButton,
+  addTypeInput,
   balanceDate,
   balanceValue,
+  categoryDate,
+  categoryNote,
+  categorySelect,
   movementsList,
   statusEl,
   summaryIn,
@@ -85,7 +93,12 @@ export const renderMovements = movements => {
     deleteBtn.type = "button";
     deleteBtn.textContent = "Delete";
 
-    row.append(type, date, value, deleteBtn);
+    const editBtn = document.createElement("button");
+    editBtn.className = "movements__edit";
+    editBtn.type = "button";
+    editBtn.textContent = "Edit";
+
+    row.append(type, date, value, editBtn, deleteBtn);
     movementsList.append(row);
   });
 };
@@ -102,4 +115,26 @@ export const setLoading = isLoading => {
 
 export const setAuthState = isAuthenticated => {
   document.body.classList.toggle("is-authenticated", isAuthenticated);
+};
+
+export const enterEditMode = transaction => {
+  addFormTitle.textContent = "Edit transaction";
+  addSubmitButton.textContent = "Save changes";
+  addCancelButton.hidden = false;
+  addTypeInput.value = transaction.type || "expense";
+  categorySelect.value = transaction.category || "misc";
+  addAmountInput.value = transaction.amount ?? "";
+  categoryDate.value = transaction.date || "";
+  categoryNote.value = transaction.note || "";
+};
+
+export const exitEditMode = () => {
+  addFormTitle.textContent = "Add transaction";
+  addSubmitButton.textContent = "Add transaction";
+  addCancelButton.hidden = true;
+  addTypeInput.value = "income";
+  categorySelect.value = "salary";
+  addAmountInput.value = "";
+  categoryDate.value = "";
+  categoryNote.value = "";
 };

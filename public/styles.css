@@ -333,6 +333,22 @@ body.is-authenticated .login {
   background: var(--danger-soft);
 }
 
+.movements__edit {
+  border: 1px solid color-mix(in srgb, var(--primary) 40%, var(--line));
+  background: transparent;
+  color: var(--primary);
+  padding: 0.3rem 0.55rem;
+  border-radius: 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.movements__edit:hover,
+.movements__edit:focus {
+  background: var(--primary-soft);
+}
+
 .summary {
   grid-row: 4;
   display: flex;
@@ -518,6 +534,18 @@ body:not(.is-authenticated) .operation--add {
 .signout__btn:hover,
 .signout__btn:focus {
   background: var(--danger-soft);
+}
+
+.form__btn--cancel {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--line);
+}
+
+.form__btn--cancel:hover,
+.form__btn--cancel:focus {
+  background: var(--bg-soft);
+  color: var(--ink);
 }
 
 .logout-timer {

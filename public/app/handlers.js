@@ -1,8 +1,8 @@
 "use strict";
 
-import { appState } from "./state.js";
+import { appState, setEditingTransactionId } from "./state.js";
 import { addAmountInput, categoryNote, filterSelect } from "./dom.js";
-import { renderMovements, setStatus, setTheme } from "./ui.js";
+import { enterEditMode, exitEditMode, renderMovements, setStatus, setTheme } from "./ui.js";
 import {
   getAuthErrorMessage,
   requireAmount,
@@ -13,6 +13,7 @@ import {
   applyFilter,
   createTransaction,
   deleteTransactionById,
+  editTransaction,
   handleAuthState,
   signIn,
   signOutUser,
@@ -55,13 +56,25 @@ export const onAddSubmit = async event => {
   const date = requireDate();
   if (!date) return;
   try {
-    await createTransaction({ amount, date });
-    addAmountInput.value = "";
-    categoryNote.value = "";
+    if (appState.editingTransactionId) {
+      await editTransaction(appState.editingTransactionId, { amount, date });
+      setEditingTransactionId(null);
+      exitEditMode();
+    } else {
+      await createTransaction({ amount, date });
+      addAmountInput.value = "";
+      categoryNote.value = "";
+    }
   } catch (error) {
     console.error(error);
-    setStatus("Failed to add transaction", "error");
+    setStatus("Failed to save transaction", "error");
   }
+};
+
+export const onCancelEditClick = () => {
+  setEditingTransactionId(null);
+  exitEditMode();
+  setStatus("Edit canceled", "success");
 };
 
 export const onSignOutClick = async () => {
@@ -74,6 +87,10 @@ export const onSignOutClick = async () => {
 };
 
 export const onAuthChange = async user => {
+  if (!user) {
+    setEditingTransactionId(null);
+    exitEditMode();
+  }
   await handleAuthState(user);
 };
 
@@ -88,12 +105,25 @@ export const onFilterClear = () => {
 
 export const onMovementsClick = async event => {
   const target = event.target;
-  if (!target.classList.contains("movements__delete")) return;
-  if (!appState.currentUser) return;
   const row = target.closest(".movements__row");
   if (!row?.dataset?.id) return;
+  const txId = row.dataset.id;
+  if (target.classList.contains("movements__edit")) {
+    const tx = appState.cachedMovements.find(item => item.id === txId);
+    if (!tx) return;
+    setEditingTransactionId(txId);
+    enterEditMode(tx);
+    setStatus("Editing transaction", "success");
+    return;
+  }
+  if (!target.classList.contains("movements__delete")) return;
+  if (!appState.currentUser) return;
   try {
-    await deleteTransactionById(row.dataset.id);
+    await deleteTransactionById(txId);
+    if (appState.editingTransactionId === txId) {
+      setEditingTransactionId(null);
+      exitEditMode();
+    }
   } catch (error) {
     console.error(error);
     setStatus("Failed to delete transaction", "error");

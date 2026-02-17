@@ -2,6 +2,7 @@
 
 import { onAuthChange as watchAuthChange } from "./api/auth.js";
 import {
+  addCancelButton,
   addForm,
   filterClear,
   filterSelect,
@@ -13,6 +14,7 @@ import {
 } from "./app/dom.js";
 import {
   onAddSubmit,
+  onCancelEditClick,
   onAuthChange,
   onFilterChange,
   onFilterClear,
@@ -34,6 +36,7 @@ themeToggle.addEventListener("click", onThemeToggle);
 loginForm.addEventListener("submit", onLoginSubmit);
 signupButton.addEventListener("click", onSignupClick);
 addForm.addEventListener("submit", onAddSubmit);
+addCancelButton.addEventListener("click", onCancelEditClick);
 signOutButton.addEventListener("click", onSignOutClick);
 filterSelect.addEventListener("change", onFilterChange);
 filterClear.addEventListener("click", onFilterClear);
