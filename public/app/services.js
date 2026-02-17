@@ -6,22 +6,18 @@ import {
   deleteTransaction,
   getSummary,
   listTransactions,
-  updateTransaction,
 } from "../api/transactions.js";
 import {
   addTypeInput,
   categoryNote,
   categorySelect,
-  filterSelect,
   isLandingPage,
   redirectToApp,
   redirectToLanding,
 } from "./dom.js";
-import { appState, setCachedMovements, setCurrentUser, setSelectedTransactionId } from "./state.js";
+import { appState, setCachedMovements, setCurrentUser } from "./state.js";
 import {
-  hydrateDetailsForm,
   renderMovements,
-  resetDetailsForm,
   setAuthState,
   setLoading,
   setStatus,
@@ -43,15 +39,6 @@ const refreshDashboard = async () => {
   updateSummary(summary);
 };
 
-export const pickTransaction = id => {
-  setSelectedTransactionId(id);
-  renderMovements(applyFilter(filterSelect.value));
-  const selected = appState.cachedMovements.find(
-    item => item.id === appState.selectedTransactionId
-  );
-  hydrateDetailsForm(selected);
-};
-
 export const signIn = async payload => {
   setLoading(true);
   try {
@@ -60,7 +47,6 @@ export const signIn = async payload => {
     setCurrentUser(user);
     setAuthState(true);
     if (isLandingPage()) redirectToApp();
-    setSelectedTransactionId(null);
     await refreshDashboard();
     setStatus("Signed in", "success");
   } finally {
@@ -76,7 +62,6 @@ export const signUp = async payload => {
     setCurrentUser(user);
     setAuthState(true);
     if (isLandingPage()) redirectToApp();
-    setSelectedTransactionId(null);
     await refreshDashboard();
     setStatus("Account created", "success");
   } finally {
@@ -97,22 +82,6 @@ export const createTransaction = async ({ amount, date }) => {
     });
     await refreshDashboard();
     setStatus("Transaction added", "success");
-  } finally {
-    setLoading(false);
-  }
-};
-
-export const saveTransactionDetails = async ({ date }) => {
-  setLoading(true);
-  try {
-    setStatus("Saving details...");
-    await updateTransaction(appState.currentUser.uid, appState.selectedTransactionId, {
-      category: categorySelect.value,
-      date,
-      note: (categoryNote.value || "").trim(),
-    });
-    await refreshDashboard();
-    setStatus("Details saved", "success");
   } finally {
     setLoading(false);
   }
@@ -140,24 +109,20 @@ export const deleteTransactionById = async id => {
   try {
     await deleteTransaction(appState.currentUser.uid, id);
     await refreshDashboard();
-    if (appState.selectedTransactionId === id) {
-      setSelectedTransactionId(null);
-      resetDetailsForm();
-    }
     setStatus("Transaction deleted", "success");
   } finally {
     setLoading(false);
   }
 };
 
-export const handleAuthState = user => {
+export const handleAuthState = async user => {
   setCurrentUser(user);
   setAuthState(Boolean(user));
   if (!user) {
-    setSelectedTransactionId(null);
     setCachedMovements([]);
     renderMovements([]);
     updateSummary({ income: 0, expense: 0, net: 0 });
-    resetDetailsForm();
+    return;
   }
+  await refreshDashboard();
 };

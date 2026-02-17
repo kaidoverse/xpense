@@ -50,18 +50,7 @@
 
       <p class="status" role="status" aria-live="polite"></p>
 
-      <section class="movements" aria-label="Transactions">
-        <div class="movements__row">
-          <div class="movements__type movements__type--income">Income</div>
-          <div class="movements__date">Today</div>
-          <div class="movements__value">$0.00</div>
-        </div>
-        <div class="movements__row">
-          <div class="movements__type movements__type--expense">Expense</div>
-          <div class="movements__date">Yesterday</div>
-          <div class="movements__value">-$0.00</div>
-        </div>
-      </section>
+      <section class="movements" aria-label="Transactions"></section>
 
       <section class="summary" aria-label="Summary">
         <p class="summary__label">In</p>
@@ -91,90 +80,75 @@
       <section class="operation operation--add">
         <h2>Add transaction</h2>
         <form class="form form--add">
-          <input
-            type="number"
-            id="add-amount"
-            name="amount"
-            inputmode="decimal"
-            class="form__input form__input--amount"
-            placeholder="Amount"
-          />
-          <select
-            id="add-type"
-            name="type"
-            class="form__input form__input--type"
-            aria-label="Type"
-          >
-            <option value="income">Income</option>
-            <option value="expense">Expense</option>
-          </select>
-          <button class="form__btn form__btn--add" type="submit">Add</button>
-          <label class="form__label" for="add-amount">Amount</label>
-          <label class="form__label" for="add-type">Type</label>
-        </form>
-      </section>
-
-      <section class="operation operation--category">
-        <h2>Details</h2>
-        <form class="form form--category">
-          <select
-            id="detail-category"
-            name="category"
-            class="form__input form__input--category"
-            aria-label="Category"
-          >
-            <option value="salary">Salary</option>
-            <option value="rent">Rent</option>
-            <option value="food">Food</option>
-            <option value="transport">Transport</option>
-            <option value="misc">Misc</option>
-          </select>
+          <div class="form__field">
+            <label class="form__label" for="add-type">Type</label>
+            <select
+              id="add-type"
+              name="type"
+              class="form__input form__input--type"
+              aria-label="Type"
+            >
+              <option value="income">Income</option>
+              <option value="expense">Expense</option>
+            </select>
+          </div>
+          <div class="form__field">
+            <label class="form__label" for="add-category">Category</label>
+            <select
+              id="add-category"
+              name="category"
+              class="form__input form__input--category"
+              aria-label="Category"
+            >
+              <option value="salary">Salary</option>
+              <option value="rent">Rent</option>
+              <option value="food">Food</option>
+              <option value="transport">Transport</option>
+              <option value="misc">Misc</option>
+            </select>
+          </div>
+          <div class="form__field">
+            <label class="form__label" for="add-amount">Amount</label>
+            <input
+              type="number"
+              id="add-amount"
+              name="amount"
+              inputmode="decimal"
+              class="form__input form__input--amount"
+              placeholder="0.00"
+            />
+          </div>
+          <div class="form__field">
+            <label class="form__label" for="add-date">Date</label>
           <input
             type="date"
-            id="detail-date"
+            id="add-date"
             name="date"
             class="form__input form__input--date"
             aria-label="Date"
+            required
           />
-          <input
-            type="text"
-            id="detail-note"
-            name="note"
-            class="form__input form__input--note"
-            placeholder="Note"
-          />
-          <button class="form__btn form__btn--category" type="submit">
-            Save
+          </div>
+          <div class="form__field form__field--full">
+            <label class="form__label" for="add-note">Note (optional)</label>
+            <input
+              type="text"
+              id="add-note"
+              name="note"
+              class="form__input form__input--note"
+              placeholder="Add context for this transaction"
+            />
+          </div>
+          <button class="form__btn form__btn--add form__btn--full" type="submit">
+            Add transaction
           </button>
-          <label class="form__label" for="detail-category">Category</label>
-          <label class="form__label" for="detail-date">Date</label>
-          <label class="form__label" for="detail-note">Note</label>
         </form>
       </section>
 
       <section class="operation operation--close">
         <h2>Sign out</h2>
-        <form class="form form--close">
-          <input
-            type="email"
-            id="close-email"
-            name="closeEmail"
-            class="form__input form__input--email"
-            placeholder="Email"
-          />
-          <input
-            type="password"
-            id="close-password"
-            name="closePassword"
-            class="form__input form__input--password"
-            placeholder="Password"
-          />
-          <button class="form__btn form__btn--close" type="submit">
-            Sign out
-          </button>
-          <label class="form__label" for="close-email">Confirm email</label>
-          <label class="form__label" for="close-password">Confirm password</label>
-        </form>
+        <p class="signout__note">End your current session on this device.</p>
+        <button class="form__btn signout__btn" type="button">Sign out</button>
       </section>
 
       <p class="logout-timer">

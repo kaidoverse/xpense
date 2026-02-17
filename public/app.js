@@ -3,30 +3,29 @@
 import { onAuthChange as watchAuthChange } from "./api/auth.js";
 import {
   addForm,
-  categoryForm,
   filterClear,
   filterSelect,
   loginForm,
   movementsList,
-  signOutForm,
+  signOutButton,
   signupButton,
   themeToggle,
 } from "./app/dom.js";
 import {
   onAddSubmit,
   onAuthChange,
-  onCategorySubmit,
   onFilterChange,
   onFilterClear,
   onLoginSubmit,
   onMovementsClick,
-  onSignOutSubmit,
+  onSignOutClick,
   onSignupClick,
   onThemeToggle,
 } from "./app/handlers.js";
-import { setAuthState, setTheme, updateSummary } from "./app/ui.js";
+import { setAuthState, setCurrentDate, setTheme, updateSummary } from "./app/ui.js";
 
-setTheme("dark");
+setTheme("light");
+setCurrentDate();
 updateSummary({ income: 0, expense: 0, net: 0 });
 setAuthState(false);
 filterSelect.value = "all";
@@ -35,8 +34,7 @@ themeToggle.addEventListener("click", onThemeToggle);
 loginForm.addEventListener("submit", onLoginSubmit);
 signupButton.addEventListener("click", onSignupClick);
 addForm.addEventListener("submit", onAddSubmit);
-categoryForm.addEventListener("submit", onCategorySubmit);
-signOutForm.addEventListener("submit", onSignOutSubmit);
+signOutButton.addEventListener("click", onSignOutClick);
 filterSelect.addEventListener("change", onFilterChange);
 filterClear.addEventListener("click", onFilterClear);
 movementsList.addEventListener("click", onMovementsClick);

@@ -4,7 +4,6 @@ import {
   addAmountInput,
   addForm,
   categoryDate,
-  categoryForm,
   loginEmailInput,
   loginForm,
   loginPasswordInput,
@@ -19,13 +18,9 @@ const clearFieldErrors = form => {
   form.querySelectorAll(".field-error").forEach(node => node.remove());
 };
 
-const showFieldError = (field, message) => {
+const showFieldError = field => {
   if (!field) return;
   field.classList.add("is-invalid");
-  const error = document.createElement("div");
-  error.className = "field-error";
-  error.textContent = message;
-  field.insertAdjacentElement("afterend", error);
 };
 
 const isValidEmail = email => /\S+@\S+\.\S+/.test(email);
@@ -65,9 +60,9 @@ export const requireAmount = () => {
 };
 
 export const requireDate = () => {
-  clearFieldErrors(categoryForm);
+  clearFieldErrors(addForm);
   if (!categoryDate.value) {
-    showFieldError(categoryDate, "Select date");
+    showFieldError(categoryDate);
     setStatus("Select a date", "error");
     return null;
   }

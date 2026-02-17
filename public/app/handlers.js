@@ -1,7 +1,7 @@
 "use strict";
 
 import { appState } from "./state.js";
-import { addAmountInput, filterSelect } from "./dom.js";
+import { addAmountInput, categoryNote, filterSelect } from "./dom.js";
 import { renderMovements, setStatus, setTheme } from "./ui.js";
 import {
   getAuthErrorMessage,
@@ -14,8 +14,6 @@ import {
   createTransaction,
   deleteTransactionById,
   handleAuthState,
-  pickTransaction,
-  saveTransactionDetails,
   signIn,
   signOutUser,
   signUp,
@@ -59,33 +57,14 @@ export const onAddSubmit = async event => {
   try {
     await createTransaction({ amount, date });
     addAmountInput.value = "";
+    categoryNote.value = "";
   } catch (error) {
     console.error(error);
     setStatus("Failed to add transaction", "error");
   }
 };
 
-export const onCategorySubmit = async event => {
-  event.preventDefault();
-  if (!appState.currentUser) return;
-  if (!appState.selectedTransactionId) {
-    setStatus("Select a transaction to edit details", "error");
-    return;
-  }
-  const date = requireDate();
-  if (!date) return;
-  try {
-    await saveTransactionDetails({ date });
-  } catch (error) {
-    console.error(error);
-    setStatus("Failed to save details", "error");
-  }
-};
-
-export const onSignOutSubmit = async event => {
-  event.preventDefault();
-  const payload = requireAuthInputs();
-  if (!payload) return;
+export const onSignOutClick = async () => {
   try {
     await signOutUser();
   } catch (error) {
@@ -94,8 +73,8 @@ export const onSignOutSubmit = async event => {
   }
 };
 
-export const onAuthChange = user => {
-  handleAuthState(user);
+export const onAuthChange = async user => {
+  await handleAuthState(user);
 };
 
 export const onFilterChange = () => {
@@ -109,13 +88,7 @@ export const onFilterClear = () => {
 
 export const onMovementsClick = async event => {
   const target = event.target;
-  if (!target.classList.contains("movements__delete")) {
-    const row = target.closest(".movements__row");
-    if (!row?.dataset?.id) return;
-    pickTransaction(row.dataset.id);
-    setStatus("Transaction selected. Update details and click Save.");
-    return;
-  }
+  if (!target.classList.contains("movements__delete")) return;
   if (!appState.currentUser) return;
   const row = target.closest(".movements__row");
   if (!row?.dataset?.id) return;

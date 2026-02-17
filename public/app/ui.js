@@ -1,10 +1,8 @@
 "use strict";
 
 import {
+  balanceDate,
   balanceValue,
-  categoryDate,
-  categoryNote,
-  categorySelect,
   movementsList,
   statusEl,
   summaryIn,
@@ -12,7 +10,24 @@ import {
   summaryOut,
   themeToggle,
 } from "./dom.js";
-import { appState } from "./state.js";
+
+const toastRoot = document.createElement("div");
+toastRoot.className = "toast-root";
+toastRoot.setAttribute("aria-live", "polite");
+toastRoot.setAttribute("aria-atomic", "false");
+document.body.append(toastRoot);
+
+const showToast = (message, tone) => {
+  if (!message || (tone !== "error" && tone !== "success")) return;
+  const toast = document.createElement("div");
+  toast.className = `toast toast--${tone}`;
+  toast.textContent = message;
+  toastRoot.append(toast);
+  window.setTimeout(() => {
+    toast.classList.add("is-leaving");
+    window.setTimeout(() => toast.remove(), 220);
+  }, 2600);
+};
 
 export const setTheme = theme => {
   document.body.setAttribute("data-theme", theme);
@@ -26,14 +41,29 @@ export const updateSummary = ({ income, expense, net }) => {
   summaryNet.textContent = `$${net.toFixed(2)}`;
 };
 
+export const setCurrentDate = (date = new Date()) => {
+  if (!balanceDate) return;
+  balanceDate.textContent = date.toLocaleDateString(undefined, {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+};
+
 export const renderMovements = movements => {
   movementsList.innerHTML = "";
+  if (!movements.length) {
+    const emptyState = document.createElement("p");
+    emptyState.className = "movements__empty";
+    emptyState.textContent = "No transactions yet. Add your first one.";
+    movementsList.append(emptyState);
+    return;
+  }
+
   movements.forEach(movement => {
     const row = document.createElement("div");
     row.className = "movements__row";
-    if (movement.id === appState.selectedTransactionId) {
-      row.classList.add("movements__row--selected");
-    }
     row.dataset.id = movement.id;
 
     const type = document.createElement("div");
@@ -61,10 +91,9 @@ export const renderMovements = movements => {
 };
 
 export const setStatus = (message, tone = "info") => {
-  statusEl.textContent = message || "";
+  statusEl.textContent = "";
   statusEl.classList.remove("is-error", "is-success");
-  if (tone === "error") statusEl.classList.add("is-error");
-  if (tone === "success") statusEl.classList.add("is-success");
+  showToast(message, tone);
 };
 
 export const setLoading = isLoading => {
@@ -73,17 +102,4 @@ export const setLoading = isLoading => {
 
 export const setAuthState = isAuthenticated => {
   document.body.classList.toggle("is-authenticated", isAuthenticated);
-};
-
-export const hydrateDetailsForm = transaction => {
-  if (!transaction) return;
-  categorySelect.value = transaction.category || "misc";
-  categoryDate.value = transaction.date || "";
-  categoryNote.value = transaction.note || "";
-};
-
-export const resetDetailsForm = () => {
-  categoryDate.value = "";
-  categoryNote.value = "";
-  categorySelect.value = "misc";
 };
