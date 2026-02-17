@@ -9,6 +9,7 @@ import {
   orderBy,
   query,
   serverTimestamp,
+  Timestamp,
   updateDoc,
   where,
 } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
@@ -16,10 +17,26 @@ import { db } from "../firebase.js";
 
 const collectionName = "transactions";
 
-const mapDoc = snapshot => ({
-  id: snapshot.id,
-  ...snapshot.data(),
-});
+const toInputDate = value => {
+  if (!value) return "";
+  if (typeof value === "string") return value;
+  if (value?.toDate) return value.toDate().toISOString().slice(0, 10);
+  return "";
+};
+
+const toFirestoreDate = input => {
+  const date = new Date(`${input}T00:00:00`);
+  return Timestamp.fromDate(date);
+};
+
+const mapDoc = snapshot => {
+  const data = snapshot.data();
+  return {
+    id: snapshot.id,
+    ...data,
+    date: toInputDate(data.date),
+  };
+};
 
 export async function listTransactions(userId) {
   const ref = collection(db, collectionName);
@@ -32,6 +49,7 @@ export async function addTransaction(userId, tx) {
   const ref = collection(db, collectionName);
   const payload = {
     ...tx,
+    date: toFirestoreDate(tx.date),
     userId,
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
@@ -44,6 +62,7 @@ export async function updateTransaction(_, id, patch) {
   const txRef = doc(db, collectionName, id);
   await updateDoc(txRef, {
     ...patch,
+    date: toFirestoreDate(patch.date),
     updatedAt: serverTimestamp(),
   });
 }
