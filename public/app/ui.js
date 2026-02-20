@@ -17,7 +17,7 @@ import {
   summaryIn,
   summaryNet,
   summaryOut,
-  themeToggle,
+  themePickerButtons,
 } from "./dom.js";
 
 const toastRoot = document.createElement("div");
@@ -25,6 +25,59 @@ toastRoot.className = "toast-root";
 toastRoot.setAttribute("aria-live", "polite");
 toastRoot.setAttribute("aria-atomic", "false");
 document.body.append(toastRoot);
+
+const THEME_MODE_KEY = "xpense-theme-mode";
+const THEME_COOKIE_NAME = "xpense_theme_mode";
+let activeThemeMode = "system";
+
+const readCookie = name => {
+  const prefix = `${name}=`;
+  const parts = document.cookie.split(";").map(item => item.trim());
+  const found = parts.find(part => part.startsWith(prefix));
+  return found ? decodeURIComponent(found.slice(prefix.length)) : null;
+};
+
+const writeCookie = (name, value) => {
+  document.cookie = `${name}=${encodeURIComponent(value)}; path=/; max-age=31536000; SameSite=Lax`;
+};
+
+const getStoredThemeMode = () => {
+  const isValid = value => value === "light" || value === "dark" || value === "system";
+  try {
+    const stored = window.localStorage.getItem(THEME_MODE_KEY);
+    if (isValid(stored)) return stored;
+  } catch {
+    // Ignore and fallback to cookie.
+  }
+  const cookieValue = readCookie(THEME_COOKIE_NAME);
+  return isValid(cookieValue) ? cookieValue : "system";
+};
+
+const getSystemTheme = () =>
+  window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+
+const setActiveThemeChoice = mode => {
+  themePickerButtons.forEach(button => {
+    button.classList.toggle("is-active", button.dataset.themeChoice === mode);
+    button.setAttribute(
+      "aria-pressed",
+      button.dataset.themeChoice === mode ? "true" : "false"
+    );
+  });
+};
+
+const applyTheme = theme => {
+  document.body.setAttribute("data-theme", theme);
+};
+
+const persistThemeMode = mode => {
+  try {
+    window.localStorage.setItem(THEME_MODE_KEY, mode);
+  } catch {
+    // Ignore storage errors in locked-down browser modes.
+  }
+  writeCookie(THEME_COOKIE_NAME, mode);
+};
 
 const showToast = (message, tone) => {
   if (!message || (tone !== "error" && tone !== "success")) return;
@@ -38,9 +91,26 @@ const showToast = (message, tone) => {
   }, 2600);
 };
 
-export const setTheme = theme => {
-  document.body.setAttribute("data-theme", theme);
-  themeToggle.textContent = theme === "dark" ? "Light mode" : "Dark mode";
+export const setThemeMode = (mode, options = {}) => {
+  const { persist = true } = options;
+  const nextMode = mode === "light" || mode === "dark" || mode === "system"
+    ? mode
+    : "system";
+  activeThemeMode = nextMode;
+  const theme = nextMode === "system" ? getSystemTheme() : nextMode;
+  applyTheme(theme);
+  setActiveThemeChoice(nextMode);
+  if (persist) persistThemeMode(nextMode);
+};
+
+export const initializeTheme = () => {
+  const storedMode = getStoredThemeMode();
+  setThemeMode(storedMode, { persist: false });
+  const media = window.matchMedia("(prefers-color-scheme: dark)");
+  media.addEventListener("change", event => {
+    if (activeThemeMode !== "system") return;
+    applyTheme(event.matches ? "dark" : "light");
+  });
 };
 
 export const updateSummary = ({ income, expense, net }) => {

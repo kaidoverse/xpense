@@ -79,20 +79,41 @@ h2 {
   margin-bottom: 1rem;
 }
 
-.theme-toggle {
+.theme-picker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0;
+  background: transparent;
+  border: none;
+}
+
+.theme-picker__btn {
   border: 1px solid var(--line);
   background: var(--card);
-  color: var(--ink);
-  padding: 0.5rem 0.9rem;
-  border-radius: var(--radius-sm);
-  font-weight: 600;
-  letter-spacing: 0.01em;
+  color: var(--muted);
+  width: 2.3rem;
+  height: 2.3rem;
+  padding: 0;
+  border-radius: 50%;
+  font-size: 0.95rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
 }
 
-.theme-toggle:hover,
-.theme-toggle:focus {
+.theme-picker__btn:hover,
+.theme-picker__btn:focus {
+  color: var(--ink);
+  background: color-mix(in srgb, var(--card) 85%, transparent);
+}
+
+.theme-picker__btn.is-active {
+  background: var(--primary);
   border-color: var(--primary);
+  color: var(--primary-ink);
 }
 
 .brand {
@@ -752,6 +773,15 @@ body:not(.is-authenticated) .operation--add {
     width: 100%;
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .theme-picker {
+    width: auto;
+    order: 3;
+  }
+
+  .theme-picker__btn {
+    flex: 0 0 auto;
   }
 
   .login__input,

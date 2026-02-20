@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
     <title>Xpense App</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
@@ -12,21 +13,45 @@
         <span class="brand__dot"></span>
         <span class="brand__text">Xpense</span>
       </div>
-      <button class="theme-toggle" type="button" aria-label="Toggle theme">
-        Light mode
-      </button>
+      <div class="theme-picker" role="group" aria-label="Theme mode">
+        <button
+          class="theme-picker__btn"
+          type="button"
+          data-theme-choice="light"
+          aria-label="Use light theme"
+          title="Light theme"
+        >
+          <span aria-hidden="true">☀</span>
+        </button>
+        <button
+          class="theme-picker__btn"
+          type="button"
+          data-theme-choice="dark"
+          aria-label="Use dark theme"
+          title="Dark theme"
+        >
+          <span aria-hidden="true">🌙</span>
+        </button>
+        <button
+          class="theme-picker__btn"
+          type="button"
+          data-theme-choice="system"
+          aria-label="Use system theme"
+          title="System theme"
+        >
+          <span aria-hidden="true">🖥</span>
+        </button>
+      </div>
       <form class="login" aria-label="Login">
         <input
           type="email"
           id="login-email"
-          name="loginEmail"
           placeholder="email"
           class="login__input login__input--email"
         />
         <input
           type="password"
           id="login-password"
-          name="loginPassword"
           placeholder="password"
           class="login__input login__input--password"
         />

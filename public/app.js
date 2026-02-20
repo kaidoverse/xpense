@@ -11,7 +11,7 @@ import {
   rangeFilter,
   signOutButton,
   signupButton,
-  themeToggle,
+  themePicker,
 } from "./app/dom.js";
 import {
   onAddSubmit,
@@ -22,26 +22,26 @@ import {
   onLoginSubmit,
   onMovementsClick,
   onRangeFilterClick,
+  onThemeChoiceClick,
   onSignOutClick,
   onSignupClick,
-  onThemeToggle,
 } from "./app/handlers.js";
 import {
+  initializeTheme,
   setActiveRangeButton,
   setAuthState,
   setCurrentDate,
-  setTheme,
   updateSummary,
 } from "./app/ui.js";
 
-setTheme("light");
+initializeTheme();
 setCurrentDate();
 updateSummary({ income: 0, expense: 0, net: 0 });
 setAuthState(false);
 filterSelect.value = "all";
 setActiveRangeButton("all");
 
-themeToggle.addEventListener("click", onThemeToggle);
+themePicker.addEventListener("click", onThemeChoiceClick);
 loginForm.addEventListener("submit", onLoginSubmit);
 signupButton.addEventListener("click", onSignupClick);
 addForm.addEventListener("submit", onAddSubmit);

@@ -1,6 +1,7 @@
 "use strict";
 
-export const themeToggle = document.querySelector(".theme-toggle");
+export const themePicker = document.querySelector(".theme-picker");
+export const themePickerButtons = document.querySelectorAll(".theme-picker__btn");
 export const loginForm = document.querySelector(".login");
 export const loginEmailInput = document.querySelector(".login__input--email");
 export const loginPasswordInput = document.querySelector(".login__input--password");

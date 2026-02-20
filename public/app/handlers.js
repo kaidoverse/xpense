@@ -6,8 +6,8 @@ import {
   enterEditMode,
   exitEditMode,
   setActiveRangeButton,
+  setThemeMode,
   setStatus,
-  setTheme,
 } from "./ui.js";
 import {
   getAuthErrorMessage,
@@ -27,10 +27,12 @@ import {
 } from "./services.js";
 import { setDateRange } from "./state.js";
 
-export const onThemeToggle = () => {
-  const nextTheme =
-    document.body.getAttribute("data-theme") === "dark" ? "light" : "dark";
-  setTheme(nextTheme);
+export const onThemeChoiceClick = event => {
+  const button = event.target.closest(".theme-picker__btn");
+  if (!button) return;
+  const mode = button.dataset.themeChoice;
+  if (!mode) return;
+  setThemeMode(mode);
 };
 
 export const onLoginSubmit = async event => {
