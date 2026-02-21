@@ -1,7 +1,11 @@
 "use strict";
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
-import { getAuth } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
+import {
+  browserSessionPersistence,
+  getAuth,
+  setPersistence,
+} from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
 import { getFirestore } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
 const firebaseConfig = window.__FIREBASE_CONFIG__;
@@ -15,3 +19,5 @@ if (!firebaseConfig?.apiKey) {
 export const firebaseApp = initializeApp(firebaseConfig);
 export const auth = getAuth(firebaseApp);
 export const db = getFirestore(firebaseApp);
+
+await setPersistence(auth, browserSessionPersistence);
