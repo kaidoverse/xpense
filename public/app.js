@@ -6,11 +6,9 @@ import {
   addForm,
   filterClear,
   filterSelect,
-  loginForm,
   movementsList,
   rangeFilter,
   signOutButton,
-  signupButton,
   themePicker,
 } from "./app/dom.js";
 import {
@@ -19,12 +17,10 @@ import {
   onAuthChange,
   onFilterChange,
   onFilterClear,
-  onLoginSubmit,
   onMovementsClick,
   onRangeFilterClick,
-  onThemeChoiceClick,
   onSignOutClick,
-  onSignupClick,
+  onThemeChoiceClick,
 } from "./app/handlers.js";
 import {
   initializeTheme,
@@ -42,8 +38,6 @@ filterSelect.value = "all";
 setActiveRangeButton("all");
 
 themePicker.addEventListener("click", onThemeChoiceClick);
-loginForm.addEventListener("submit", onLoginSubmit);
-signupButton.addEventListener("click", onSignupClick);
 addForm.addEventListener("submit", onAddSubmit);
 addCancelButton.addEventListener("click", onCancelEditClick);
 signOutButton.addEventListener("click", onSignOutClick);

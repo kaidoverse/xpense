@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <title>Sign Up - Xpense</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="auth-page" data-auth-mode="signup">
+    <main class="auth-layout">
+      <section class="auth-panel auth-panel--left">
+        <div class="auth-brand">
+          <span class="brand__dot"></span>
+          <span class="brand__text">Xpense</span>
+        </div>
+        <h1 class="auth-hero-title">
+          Build better money habits from your very first log.
+        </h1>
+        <p class="auth-hero-copy">
+          Create your account and start tracking transactions in minutes.
+        </p>
+      </section>
+
+      <section class="auth-panel auth-panel--right">
+        <form class="auth-form" aria-label="Sign up form">
+          <h2>Create your account</h2>
+          <label class="auth-label" for="auth-email">Email</label>
+          <input
+            class="auth-input"
+            id="auth-email"
+            name="email"
+            type="email"
+            autocomplete="email"
+            placeholder="Enter your email address"
+            required
+          />
+
+          <label class="auth-label" for="auth-password">Password</label>
+          <input
+            class="auth-input"
+            id="auth-password"
+            name="password"
+            type="password"
+            autocomplete="new-password"
+            placeholder="Create a password"
+            required
+          />
+
+          <button class="auth-submit" type="submit">Create account</button>
+          <p class="auth-switch">
+            Already have an account? <a href="login.html">Sign In</a>
+          </p>
+        </form>
+      </section>
+    </main>
+
+    <script src="firebase-config.local.js"></script>
+    <script type="module" src="auth-page.js"></script>
+  </body>
+</html>

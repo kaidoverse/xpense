@@ -12,9 +12,6 @@ import {
   addTypeInput,
   categoryNote,
   categorySelect,
-  isLandingPage,
-  redirectToApp,
-  redirectToLanding,
 } from "./dom.js";
 import { appState, setCachedMovements, setCurrentUser } from "./state.js";
 import {
@@ -98,7 +95,6 @@ export const signIn = async payload => {
     const user = await login(payload.email, payload.password);
     setCurrentUser(user);
     setAuthState(true);
-    if (isLandingPage()) redirectToApp();
     await refreshDashboard();
     setStatus("Signed in", "success");
   } finally {
@@ -113,7 +109,6 @@ export const signUp = async payload => {
     const user = await register(payload.email, payload.password);
     setCurrentUser(user);
     setAuthState(true);
-    if (isLandingPage()) redirectToApp();
     await refreshDashboard();
     setStatus("Account created", "success");
   } finally {
@@ -168,7 +163,7 @@ export const signOutUser = async () => {
     updateSummary({ income: 0, expense: 0, net: 0 });
     setStatus("Signed out");
     setAuthState(false);
-    redirectToLanding();
+    window.location.href = "login.html";
   } finally {
     setLoading(false);
   }
@@ -192,6 +187,9 @@ export const handleAuthState = async user => {
     setCachedMovements([]);
     renderMovements([]);
     updateSummary({ income: 0, expense: 0, net: 0 });
+    if (window.location.pathname.endsWith("/app.html")) {
+      window.location.href = "login.html";
+    }
     return;
   }
   await refreshDashboard();
