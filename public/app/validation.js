@@ -73,16 +73,16 @@ export const getAuthErrorMessage = error => {
   const code = error?.code || "";
   if (code === "auth/email-already-in-use") {
     showFieldError(loginEmailInput, "Email already registered");
-    return "Email already registered. Sign in instead.";
+    return "Unable to create account with these details.";
   }
   if (code === "auth/invalid-credential" || code === "auth/user-not-found") {
     showFieldError(loginEmailInput, "Check email");
     showFieldError(loginPasswordInput, "Check password");
-    return "Invalid credentials. Check email/password.";
+    return "Unable to sign in with these details.";
   }
   if (code === "auth/wrong-password") {
     showFieldError(loginPasswordInput, "Wrong password");
-    return "Wrong password.";
+    return "Unable to sign in with these details.";
   }
   if (code === "auth/weak-password") {
     showFieldError(loginPasswordInput, "Weak password");
