@@ -3,6 +3,7 @@
 import {
   createUserWithEmailAndPassword,
   onAuthStateChanged,
+  sendEmailVerification,
   signInWithEmailAndPassword,
   signOut,
 } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
@@ -14,6 +15,7 @@ export async function register(email, password) {
     email,
     password
   );
+  await sendEmailVerification(credential.user);
   return credential.user;
 }
 

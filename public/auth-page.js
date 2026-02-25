@@ -29,13 +29,17 @@ const getTheme = mode => {
   return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 };
 
-document.body.setAttribute("data-theme", getTheme(getThemeMode()));
+const initialTheme = getTheme(getThemeMode());
+document.documentElement.setAttribute("data-theme", initialTheme);
+document.documentElement.style.backgroundColor = initialTheme === "dark" ? "#0f1720" : "#f3f5f7";
+document.body.setAttribute("data-theme", initialTheme);
 
 const form = document.querySelector(".auth-form");
 const emailInput = document.querySelector("#auth-email");
 const passwordInput = document.querySelector("#auth-password");
 const submitButton = document.querySelector(".auth-submit");
 const mode = document.body.dataset.authMode === "signup" ? "signup" : "login";
+const params = new URLSearchParams(window.location.search);
 
 const showError = message => {
   const existing = document.querySelector(".auth-error");
@@ -49,6 +53,15 @@ const showError = message => {
 const clearError = () => {
   const existing = document.querySelector(".auth-error");
   if (existing) existing.remove();
+};
+
+const showInfo = message => {
+  const existing = document.querySelector(".auth-info");
+  if (existing) existing.remove();
+  const node = document.createElement("p");
+  node.className = "auth-info";
+  node.textContent = message;
+  form.insertBefore(node, submitButton);
 };
 
 const mapAuthError = error => {
@@ -92,6 +105,8 @@ form.addEventListener("submit", async event => {
   try {
     if (mode === "signup") {
       await register(payload.email, payload.password);
+      window.location.href = "login.html?verify=1";
+      return;
     } else {
       await login(payload.email, payload.password);
     }
@@ -107,3 +122,9 @@ form.addEventListener("submit", async event => {
 onAuthChange(user => {
   if (user) window.location.href = "app.html";
 });
+
+if (params.get("verify") === "1") {
+  showInfo("Account created. Check your inbox and verify your email before signing in.");
+} else if (params.get("unverified") === "1") {
+  showInfo("Please verify your email before accessing the app.");
+}
