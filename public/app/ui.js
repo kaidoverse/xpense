@@ -67,6 +67,8 @@ const setActiveThemeChoice = mode => {
 };
 
 const applyTheme = theme => {
+  document.documentElement.setAttribute("data-theme", theme);
+  document.documentElement.style.backgroundColor = theme === "dark" ? "#0f1720" : "#f3f5f7";
   document.body.setAttribute("data-theme", theme);
 };
 
@@ -151,7 +153,7 @@ export const renderMovements = movements => {
 
     const date = document.createElement("div");
     date.className = "movements__date";
-    const categoryLabel = movement.category ? `? ${movement.category}` : "";
+    const categoryLabel = movement.category ? `- ${movement.category}` : "";
     date.textContent = `${movement.date || "Today"} ${categoryLabel}`.trim();
 
     const value = document.createElement("div");

@@ -29,7 +29,10 @@ const getTheme = mode => {
   return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 };
 
-document.body.setAttribute("data-theme", getTheme(getThemeMode()));
+const initialTheme = getTheme(getThemeMode());
+document.documentElement.setAttribute("data-theme", initialTheme);
+document.documentElement.style.backgroundColor = initialTheme === "dark" ? "#0f1720" : "#f3f5f7";
+document.body.setAttribute("data-theme", initialTheme);
 
 onAuthChange(user => {
   if (user) window.location.href = "app.html";
