@@ -5,6 +5,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="referrer" content="strict-origin-when-cross-origin" />
     <title>Xpense App</title>
+    <script>
+      (() => {
+        const modeKey = "xpense-theme-mode";
+        const cookieName = "xpense_theme_mode";
+        const isValid = value => value === "light" || value === "dark" || value === "system";
+        const readCookie = name => {
+          const prefix = name + "=";
+          const parts = document.cookie.split(";").map(item => item.trim());
+          const match = parts.find(item => item.startsWith(prefix));
+          return match ? decodeURIComponent(match.slice(prefix.length)) : null;
+        };
+        let mode = "system";
+        try {
+          const stored = window.localStorage.getItem(modeKey);
+          if (isValid(stored)) mode = stored;
+        } catch {}
+        if (mode === "system") {
+          const cookieMode = readCookie(cookieName);
+          if (isValid(cookieMode)) mode = cookieMode;
+        }
+        const theme =
+          mode === "light" || mode === "dark"
+            ? mode
+            : window.matchMedia("(prefers-color-scheme: dark)").matches
+              ? "dark"
+              : "light";
+        const root = document.documentElement;
+        root.setAttribute("data-theme", theme);
+        root.style.backgroundColor = theme === "dark" ? "#0f1720" : "#f3f5f7";
+      })();
+    </script>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
@@ -196,6 +227,7 @@
     </main>
 
     <script src="firebase-config.local.js"></script>
+    <script src="page-transition.js"></script>
     <script type="module" src="app.js"></script>
   </body>
 </html>
